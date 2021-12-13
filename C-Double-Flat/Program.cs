@@ -12,7 +12,7 @@ namespace C_Double_Flat
 {
     public class Program
     {
-        public static string Location => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string Location = AppDomain.CurrentDomain.BaseDirectory;
         public static void Main(string[] args)
         {
             LoadLibraries();
@@ -32,7 +32,7 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL v2 Indev");
+                Console.WriteLine("C Double Flat - REPL v2.0.0 rc 1");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyright (C) Hababisoft Corporation. All rights reserved.");
             }
@@ -59,9 +59,8 @@ namespace C_Double_Flat
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine(e.Message);
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Error.WriteLine(e.StackTrace);
+                    Console.Error.WriteLine(e.Message);
                     Console.ResetColor();
                 }
 
