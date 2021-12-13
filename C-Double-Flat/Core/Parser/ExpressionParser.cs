@@ -86,7 +86,7 @@ namespace C_Double_Flat.Core.Parser
                     Next(); Next();
                     var parameters = ParseExpressionList();
                     ExpectThenNext(TokenType.RightParenthesis);
-                    return new FunctionCallNode(position, identifier, parameters);
+                    return new FunctionCallNode(position, new AsNameNode(position,identifier), parameters);
                 
             }
             return new AsNameNode(position, identifier);
