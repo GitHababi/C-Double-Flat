@@ -20,21 +20,31 @@ namespace C_Double_Flat
             {
                 if (File.Exists(args[0]))
                 {
-                    var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(args[0])));
+                    try
+                    {
+                        var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(args[0])));
 
-                    var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
-                    Console.ResetColor();
-                    Console.ReadKey(false);
-                    Environment.Exit(0);
+                        var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
+                        Console.ResetColor();
+                        Console.ReadKey(false);
+                        Environment.Exit(0);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Error.WriteLine(e.Message);
+                        Console.ResetColor();
+                    }
                 }
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL v2.0.0 rc 1");
+                Console.WriteLine("C Double Flat - REPL v2.0.0 Release Candidate 1");
                 Console.WriteLine("Created by Heerod Sahraei");
-                Console.WriteLine("Copyright (C) Hababisoft Corporation. All rights reserved.");
+                Console.WriteLine("Copyleft Hababisoft Corporation. All rights reserved.");
             }
 
             while (true)

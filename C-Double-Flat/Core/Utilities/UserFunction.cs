@@ -30,7 +30,6 @@ namespace C_Double_Flat.Core.Utilities
             }
             argsStatements.Add(this.statement);
             var toExecute = new StatementBlock(argsStatements);
-            Console.WriteLine("<<>><"+toExecute);
             return Interpreter.Interpret(toExecute, sourceDir).Item1;
         }
 
