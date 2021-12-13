@@ -42,9 +42,9 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL v2.0.0 Release Candidate 1");
+                Console.WriteLine("C Double Flat - REPL 2.0.0-rc.1");
                 Console.WriteLine("Created by Heerod Sahraei");
-                Console.WriteLine("Copyleft Hababisoft Corporation. All rights reserved.");
+                Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
             }
 
             while (true)

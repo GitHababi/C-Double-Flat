@@ -193,7 +193,7 @@ namespace C_Double_Flat.Core.Runtime
             var path = (string)InterpretExpression(runStatement.RelativeLocation);
             try
             {
-                path = Path.Combine(Dir, path);
+                path = File.Exists(path) ? path : Path.Combine(Dir, path);
                 var data = File.ReadAllText(path);
                 return Interpret(
                     Parser.Parser.Parse(Lexer.Tokenize(data)),
