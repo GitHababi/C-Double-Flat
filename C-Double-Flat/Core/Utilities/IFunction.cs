@@ -9,6 +9,6 @@ namespace C_Double_Flat.Core.Utilities
     public interface IFunction
     {
         public string Name { get; }
-        public Variable Run(List<Variable> variables);
+        public IVariable Run(List<IVariable> variables);
     }
 }

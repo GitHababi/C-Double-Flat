@@ -13,7 +13,7 @@ namespace C_Double_Flat.Core.Utilities
         private readonly Statement statement;
         private readonly List<Token> args;
         private readonly string sourceDir;
-        public Variable Run(List<Variable> parameters)
+        public IVariable Run(List<IVariable> parameters)
         {
             List<Statement> argsStatements = new();
             for (int i = 0; i < args.Count; i++)

@@ -14,10 +14,10 @@ namespace C_Double_Flat.Core.Utilities
 
     public sealed class VariableNode : ExpressionNode
     {
-        public Variable Value;
+        public IVariable Value;
 
 
-        public VariableNode(Variable value)
+        public VariableNode(IVariable value)
         {
             this.Value = value;
             Type = NodeType.Variable;

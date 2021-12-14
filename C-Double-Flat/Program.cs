@@ -42,7 +42,7 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL 2.0.0-rc.1");
+                Console.WriteLine("C Double Flat - REPL 2.0.0-rc.2");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
             }
@@ -61,7 +61,6 @@ namespace C_Double_Flat
                     else
                         tokens = Lexer.Tokenize(input);
                     var statements = Parser.Parse(tokens);
-
                     var output = Interpreter.Interpret(statements, File.Exists(input) ? Path.GetDirectoryName(input) : Location);
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");

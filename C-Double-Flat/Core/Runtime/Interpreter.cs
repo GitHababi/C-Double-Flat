@@ -10,7 +10,7 @@ namespace C_Double_Flat.Core.Runtime
 {
     public sealed partial class Interpreter
     {
-        private static readonly Dictionary<string, Variable> GlobalVariables = new();
+        private static readonly Dictionary<string, IVariable> GlobalVariables = new();
         private static readonly object _lock = new();
 
         private static readonly Dictionary<string,IFunction> Functions = new();
@@ -69,7 +69,7 @@ namespace C_Double_Flat.Core.Runtime
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static Variable TryGetGlobalVariable(string key)
+        public static IVariable TryGetGlobalVariable(string key)
         {
             lock (_lock) { return GlobalVariables.TryGetValue(key, out var variable) ? variable : ValueVariable.Default; }
         }
@@ -79,7 +79,7 @@ namespace C_Double_Flat.Core.Runtime
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        private void SetGlobalVariable(string key, Variable value)
+        private void SetGlobalVariable(string key, IVariable value)
         {
             LocalVariables.Remove(key);
             lock (_lock)
@@ -88,9 +88,9 @@ namespace C_Double_Flat.Core.Runtime
                 GlobalVariables.Add(key, value);
             }
         }
-        private readonly Dictionary<string, Variable> LocalVariables = new();
+        private readonly Dictionary<string, IVariable> LocalVariables = new();
         private readonly string Dir;
-        private Variable TryGetLocalVariable(string key)
+        private IVariable TryGetLocalVariable(string key)
         {
             return LocalVariables.TryGetValue(key, out var variable) ? variable : ValueVariable.Default;
         }
@@ -100,7 +100,7 @@ namespace C_Double_Flat.Core.Runtime
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        private void SetLocalVariable(string key, Variable value)
+        private void SetLocalVariable(string key, IVariable value)
         {
             LocalVariables.Remove(key);
             if (GlobalVariables.ContainsKey(key))
@@ -108,21 +108,21 @@ namespace C_Double_Flat.Core.Runtime
             else
                 LocalVariables.Add(key, value);
         }
-        private Variable GetVariable(string key)
+        private IVariable GetVariable(string key)
         {
             if (!LocalVariables.ContainsKey(key))
                 return (TryGetGlobalVariable(key));
             return (TryGetLocalVariable(key));
         }
 
-        private void SetVariable(bool global, string key, Variable value)
+        private void SetVariable(bool global, string key, IVariable value)
         {
             if (global)
                 SetGlobalVariable(key, value);
             else
                 SetLocalVariable(key, value);
         }
-        public static (Variable, bool) Interpret(Statement statement, string dir)
+        public static (IVariable, bool) Interpret(Statement statement, string dir)
         {
             return new Interpreter(dir).Interpret(statement);
         }
@@ -132,7 +132,7 @@ namespace C_Double_Flat.Core.Runtime
             this.Dir = dir;
         }
 
-        private (Variable, bool) Interpret(Statement statement)
+        private (IVariable, bool) Interpret(Statement statement)
         {
             switch (statement.Type)
             {
@@ -188,9 +188,9 @@ namespace C_Double_Flat.Core.Runtime
             var function = new UserFunction(args, statement.Statement, Dir);
             SetFunction(name, function);
         } 
-        private (Variable,bool) InterpretRun(RunStatement runStatement)
+        private (IVariable,bool) InterpretRun(RunStatement runStatement)
         {
-            var path = (string)InterpretExpression(runStatement.RelativeLocation);
+            var path = InterpretExpression(runStatement.RelativeLocation).AsString();
             try
             {
                 path = File.Exists(path) ? path : Path.Combine(Dir, path);
@@ -204,15 +204,15 @@ namespace C_Double_Flat.Core.Runtime
             return (ValueVariable.Default,false);
 
         }
-        private (Variable, bool) InterpretIf(IfStatement ifStatement)
+        private (IVariable, bool) InterpretIf(IfStatement ifStatement)
         {
-            if ((bool)InterpretExpression(ifStatement.Condition))
+            if (InterpretExpression(ifStatement.Condition).AsBool())
                 return Interpret(ifStatement.DoIf);
             return Interpret(ifStatement.DoElse);
         }
-        private (Variable, bool) InterpretRepeat(RepeatStatement repeatStatement)
+        private (IVariable, bool) InterpretRepeat(RepeatStatement repeatStatement)
         {
-            var nums = Convert.ToInt32((double)InterpretExpression(repeatStatement.Amount));
+            var nums = Convert.ToInt32(InterpretExpression(repeatStatement.Amount).AsDouble());
             for (int i = 0; i < nums; i++)
             {
                 var variable = Interpret(repeatStatement.Statement);
@@ -221,9 +221,9 @@ namespace C_Double_Flat.Core.Runtime
             }
             return (ValueVariable.Default, false);
         }
-        private (Variable, bool) InterpretLoop(LoopStatement loopStatement)
+        private (IVariable, bool) InterpretLoop(LoopStatement loopStatement)
         {
-            while ((bool)InterpretExpression(loopStatement.Condition))
+            while (InterpretExpression(loopStatement.Condition).AsBool())
             {
                 var variable = Interpret(loopStatement.Statement);
                 if (variable.Item2)
@@ -256,7 +256,7 @@ namespace C_Double_Flat.Core.Runtime
         {
             CollectionCallNode collectionCallNode = (CollectionCallNode)assignmentStatement.Identifier;
 
-            int location = Convert.ToInt32((double)InterpretExpression(collectionCallNode.Location));
+            int location = Convert.ToInt32(InterpretExpression(collectionCallNode.Location).AsDouble());
             string assignment;
             switch (collectionCallNode.Caller.Type)
             {
@@ -271,7 +271,7 @@ namespace C_Double_Flat.Core.Runtime
             }
 
             var current = GetVariable(assignment);
-            if (current.Type != VariableType.Collection)
+            if (current.Type() != VariableType.Collection)
                 SetVariable(assignmentStatement.Global, assignment, new CollectionVariable(InterpretExpression(assignmentStatement.Assignment)));
             else
             {
@@ -283,18 +283,18 @@ namespace C_Double_Flat.Core.Runtime
         private string InterpretAsNameAssignment(ExpressionNode node)
         {
             AsNameNode asnnode = (AsNameNode)node;
-            return InterpretExpression(asnnode.Identifier);
+            return InterpretExpression(asnnode.Identifier).AsString();
         }
         private static string InterpretLiteralAssignment(ExpressionNode node)
         {
             LiteralNode litnode = (LiteralNode)node;
             return litnode.Value.Data;
         }
-        private (Variable, bool) InterpretReturn(ReturnStatement returnStatement)
+        private (IVariable, bool) InterpretReturn(ReturnStatement returnStatement)
         {
             return (InterpretExpression(returnStatement.Expression), true);
         }
-        private (Variable, bool) InterpretBlock(StatementBlock block)
+        private (IVariable, bool) InterpretBlock(StatementBlock block)
         {
             foreach (Statement statement in block.Statements)
             {
