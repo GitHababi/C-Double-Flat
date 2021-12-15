@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace C_Double_Flat.Core.Utilities
 {
@@ -34,7 +30,7 @@ namespace C_Double_Flat.Core.Utilities
         public ExpressionNode Left;
         public Token Operation;
         public ExpressionNode Right;
-        
+
 
         public BinaryOperationNode(ExpressionNode left, Token operation, ExpressionNode right)
         {
@@ -66,7 +62,7 @@ namespace C_Double_Flat.Core.Utilities
             return $"({Value.Type} : {Value.Data})";
         }
     }
-    
+
 
     public sealed class CollectionLiteralNode : ExpressionNode
     {
@@ -83,11 +79,30 @@ namespace C_Double_Flat.Core.Utilities
         public override string ToString()
         {
             string elementsAsString = "";
-            Elements.ForEach(a => {
+            Elements.ForEach(a =>
+            {
                 elementsAsString += a + ",";
             });
 
             return $"(Collection : {elementsAsString})";
+        }
+    }
+
+    public sealed class NotNode : ExpressionNode
+    {
+        public ExpressionNode Expression;
+
+
+        public NotNode(Position position, ExpressionNode expression)
+        {
+            this.Position = position;
+            this.Expression = expression;
+            Type = NodeType.Not;
+        }
+
+        public override string ToString()
+        {
+            return $"(NOT : {Expression})";
         }
     }
 
@@ -96,7 +111,7 @@ namespace C_Double_Flat.Core.Utilities
         public ExpressionNode Identifier;
 
 
-        public AsNameNode(Position position,ExpressionNode identifier)
+        public AsNameNode(Position position, ExpressionNode identifier)
         {
             this.Position = position;
             this.Identifier = identifier;

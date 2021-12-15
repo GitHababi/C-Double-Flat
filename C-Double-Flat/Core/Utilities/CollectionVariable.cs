@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using C_Double_Flat.Core.Runtime;
+using System.Collections.Generic;
 using System.Linq;
-using C_Double_Flat.Core.Runtime;
 namespace C_Double_Flat.Core.Utilities
 {
     public struct CollectionVariable : IVariable

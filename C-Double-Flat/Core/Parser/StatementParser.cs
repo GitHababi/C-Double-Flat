@@ -1,9 +1,5 @@
-﻿using System;
+﻿using C_Double_Flat.Core.Utilities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using C_Double_Flat.Core.Utilities;
 
 namespace C_Double_Flat.Core.Parser
 {
@@ -51,11 +47,19 @@ namespace C_Double_Flat.Core.Parser
                     return ParseLoneElseStatement(scoped);
                 case TokenType.AsName:
                     return ParseAmbiguousAsName(scoped);
+                case TokenType.Dispose:
+                    return ParseDisposeStatement();
                 default:
                     return ParseExpressionStatement();
             }
         }
-
+        private Statement ParseDisposeStatement()
+        {
+            var position = ExpectThenNext(TokenType.Dispose).Position;
+            var disposer = ParsePrimaryExpression();
+            ExpectThenNext(TokenType.SemiColon);
+            return new DisposeStatement(position, disposer);
+        }
         /// <summary>
         /// Checks if parser will hit assignment or semicolon first, determining whether it is parsing some sort of
         /// assignment or an expression
@@ -127,9 +131,7 @@ namespace C_Double_Flat.Core.Parser
         private Statement ParseIfStatement(bool scoped = false)
         {
             var position = ExpectThenNext(TokenType.If).Position;
-            ExpectThenNext(TokenType.LeftParenthesis);
             var condition = ParseBinaryExpression();
-            ExpectThenNext(TokenType.RightParenthesis);
             ExpectThenNext(TokenType.Assignment);
             var ifStatement = ParseStatement(scoped);
             Statement elseStatement = new StatementBlock(new List<Statement>());
@@ -148,9 +150,7 @@ namespace C_Double_Flat.Core.Parser
         private Statement ParseLoopStatement(bool scoped = false)
         {
             var position = ExpectThenNext(TokenType.Loop).Position;
-            ExpectThenNext(TokenType.LeftParenthesis);
             var condition = ParseBinaryExpression();
-            ExpectThenNext(TokenType.RightParenthesis);
             ExpectThenNext(TokenType.Assignment);
             var statement = ParseStatement(scoped);
 
@@ -161,9 +161,7 @@ namespace C_Double_Flat.Core.Parser
         private Statement ParseRepeatStatement(bool scoped = false)
         {
             var position = ExpectThenNext(TokenType.Repeat).Position;
-            ExpectThenNext(TokenType.LeftParenthesis);
             var amount = ParseBinaryExpression();
-            ExpectThenNext(TokenType.RightParenthesis);
             ExpectThenNext(TokenType.Assignment);
             var statement = ParseStatement(scoped);
 
@@ -200,9 +198,7 @@ namespace C_Double_Flat.Core.Parser
             if (CurrentToken.Type == TokenType.Insertion)
             {
                 Next();
-                ExpectThenNext(TokenType.LeftParenthesis);
                 parameters = ParseExpressionList();
-                ExpectThenNext(TokenType.RightParenthesis);
                 ExpectThenNext(TokenType.SemiColon);
             }
 

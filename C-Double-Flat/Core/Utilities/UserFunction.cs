@@ -1,9 +1,5 @@
-﻿using System;
+﻿using C_Double_Flat.Core.Runtime;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using C_Double_Flat.Core.Runtime;
 namespace C_Double_Flat.Core.Utilities
 {
     public class UserFunction : IFunction
@@ -23,7 +19,7 @@ namespace C_Double_Flat.Core.Utilities
                     assignment = new VariableNode(parameters[i]);
                 else
                     assignment = new VariableNode(ValueVariable.Default);
-                
+
                 var identifier = new LiteralNode(args[i]);
                 argsStatements.Add
                    (new AssignmentStatement(Position.Zero, identifier, assignment, false));

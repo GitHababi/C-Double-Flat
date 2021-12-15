@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace C_Double_Flat.Core.Utilities
 {
@@ -13,6 +9,23 @@ namespace C_Double_Flat.Core.Utilities
     {
         public Position Position;
         public StatementType Type;
+    }
+
+    public sealed class DisposeStatement : Statement
+    {
+        public ExpressionNode Disposer;
+
+        public DisposeStatement(Position position, ExpressionNode disposer)
+        {
+            this.Position = position;
+            this.Disposer = disposer;
+            this.Type = StatementType.Dispose;
+        }
+
+        public override string ToString()
+        {
+            return $"- DISPOSE OF: {Disposer}";
+        }
     }
 
     public sealed class IfStatement : Statement
@@ -136,7 +149,7 @@ namespace C_Double_Flat.Core.Utilities
             });
             string output = $"- FUNCTION {Identifier} WITH PARAMETERS {parameters} : {Statement} ";
 
-            
+
 
             return output;
         }
@@ -182,7 +195,8 @@ namespace C_Double_Flat.Core.Utilities
         }
     }
 
-    public sealed class StatementBlock : Statement {
+    public sealed class StatementBlock : Statement
+    {
 
         public List<Statement> Statements;
 
@@ -201,7 +215,7 @@ namespace C_Double_Flat.Core.Utilities
             {
                 output += "\n" + item.ToString();
             });
-            
+
             return output;
         }
     }

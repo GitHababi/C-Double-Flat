@@ -1,7 +1,7 @@
-using NUnit.Framework;
-using C_Double_Flat.Core.Runtime;
 using C_Double_Flat.Core.Parser;
+using C_Double_Flat.Core.Runtime;
 using C_Double_Flat.Core.Utilities;
+using NUnit.Framework;
 namespace C_Double_Flat_Testing
 {
     public class Tests
@@ -47,7 +47,7 @@ namespace C_Double_Flat_Testing
         [Test]
         public void ExpressionInterpreting()
         {
-            Interpreter.Interpret(Parser.Parse(Lexer.Tokenize("")), false);
+            Interpreter.Interpret(Parser.Parse(Lexer.Tokenize("")), "");
         }
     }
 }

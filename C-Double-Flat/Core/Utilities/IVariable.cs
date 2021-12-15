@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Threading.Tasks;
-namespace C_Double_Flat.Core.Utilities
+﻿namespace C_Double_Flat.Core.Utilities
 {
 
     public enum VariableType

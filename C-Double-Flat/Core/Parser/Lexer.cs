@@ -1,9 +1,7 @@
-﻿using System;
+﻿using C_Double_Flat.Core.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using C_Double_Flat.Core.Utilities;
 namespace C_Double_Flat.Core.Parser
 {
     public sealed class Lexer
@@ -120,7 +118,7 @@ namespace C_Double_Flat.Core.Parser
                         output = new(Position, TokenType.NotEqual);
                         Advance(2);
                     }
-                    else throw new InvalidTokenException(Position, '!');
+                    else output = new(Position, TokenType.Not);
                     break;
                 case '=':
                     output = new(Position, TokenType.Equal);
@@ -229,7 +227,8 @@ namespace C_Double_Flat.Core.Parser
                 "false" => new(output.Position, TokenType.Boolean, "false"),
                 "asname" => new(output.Position, TokenType.AsName),
                 "global" => new(output.Position, TokenType.Global),
-                "local" => new (output.Position, TokenType.Local),
+                "local" => new(output.Position, TokenType.Local),
+                "dispose" => new(output.Position, TokenType.Dispose),
                 _ => output
             };
         }

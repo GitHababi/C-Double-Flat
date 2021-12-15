@@ -1,9 +1,6 @@
-﻿using System;
+﻿using C_Double_Flat.Core.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using C_Double_Flat.Core.Utilities;
 
 namespace C_Double_Flat.Core.Runtime
 {
@@ -15,6 +12,8 @@ namespace C_Double_Flat.Core.Runtime
             {
                 default:
                     throw new Exception($"Expression has invalid type '{node.Type}' at Line: {node.Position.Row} Column: {node.Position.Column}.");
+                case NodeType.Not:
+                    return InterpretNotNode((NotNode)node);
                 case NodeType.Variable:
                     return ((VariableNode)node).Value;
                 case NodeType.BinaryOperation:
@@ -34,6 +33,12 @@ namespace C_Double_Flat.Core.Runtime
                     return InterpretCollectionCall((CollectionCallNode)node);
             }
         }
+        private IVariable InterpretNotNode(NotNode node)
+        {
+            var value = InterpretExpression(node.Expression);
+            return new ValueVariable(!value.AsBool());
+
+        }
         private IVariable InterpretCollectionCall(CollectionCallNode node)
         {
             string name;
@@ -41,11 +46,11 @@ namespace C_Double_Flat.Core.Runtime
             switch (node.Caller.Type)
             {
                 case NodeType.AsName:
-                    name = InterpretAsNameAssignment(node.Caller);
+                    name = GetAsNameIdentifier(node.Caller);
                     variable = GetVariable(name);
                     break;
                 case NodeType.Literal:
-                    name = InterpretLiteralAssignment(node.Caller);
+                    name = GetLiteralIdentifier(node.Caller);
                     variable = GetVariable(name);
                     break;
                 default:
@@ -65,10 +70,10 @@ namespace C_Double_Flat.Core.Runtime
             switch (node.Caller.Type)
             {
                 case NodeType.AsName:
-                    name = InterpretAsNameAssignment(node.Caller);
+                    name = GetAsNameIdentifier(node.Caller);
                     break;
                 case NodeType.Literal:
-                    name = InterpretLiteralAssignment(node.Caller);
+                    name = GetLiteralIdentifier(node.Caller);
                     break;
                 default:
                     return ValueVariable.Default;

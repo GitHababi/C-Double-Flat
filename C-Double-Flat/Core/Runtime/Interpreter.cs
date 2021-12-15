@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using C_Double_Flat.Core.Parser;
 using C_Double_Flat.Core.Utilities;
-using C_Double_Flat.Core.Parser;
+using System;
+using System.Collections.Generic;
 using System.IO;
 namespace C_Double_Flat.Core.Runtime
 {
@@ -13,9 +10,9 @@ namespace C_Double_Flat.Core.Runtime
         private static readonly Dictionary<string, IVariable> GlobalVariables = new();
         private static readonly object _lock = new();
 
-        private static readonly Dictionary<string,IFunction> Functions = new();
+        private static readonly Dictionary<string, IFunction> Functions = new();
         private static readonly object _lock1 = new();
-        
+
         /// <summary>
         /// Safely gets a function from the Interpreter
         /// </summary>
@@ -63,7 +60,7 @@ namespace C_Double_Flat.Core.Runtime
                 Functions.Add(key, function);
             }
         }
-        
+
         /// <summary>
         /// Safely get a global variable.
         /// </summary>
@@ -136,6 +133,9 @@ namespace C_Double_Flat.Core.Runtime
         {
             switch (statement.Type)
             {
+                case StatementType.Dispose:
+                    InterpretDispose((DisposeStatement)statement);
+                    break;
                 case StatementType.Expression:
                     InterpretExpression(((ExpressionStatement)statement).Expression);
                     break;
@@ -162,6 +162,32 @@ namespace C_Double_Flat.Core.Runtime
             }
             return (ValueVariable.Default, false);
         }
+        private void InterpretDispose(DisposeStatement statement)
+        {
+            string name;
+            switch (statement.Disposer.Type)
+            {
+                case NodeType.AsName:
+                    name = GetAsNameIdentifier(statement.Disposer);
+                    break;
+                case NodeType.Literal:
+                    name = GetLiteralIdentifier(statement.Disposer);
+                    break;
+                case NodeType.FunctionCall:
+                    name = GetFunctionCallIdentifier(statement.Disposer);
+                    lock (_lock1) Functions.Remove(name);
+                    return;
+                default:
+                    return;
+            }
+            lock (_lock)
+            {
+                if (!GlobalVariables.Remove(name))
+                    LocalVariables.Remove(name);
+            }
+
+        }
+
         private void InterpretFunction(FunctionStatement statement)
         {
             List<Token> args = new();
@@ -169,16 +195,16 @@ namespace C_Double_Flat.Core.Runtime
             switch (statement.Identifier.Type)
             {
                 case NodeType.AsName:
-                    name = InterpretAsNameAssignment(statement.Identifier);
+                    name = GetAsNameIdentifier(statement.Identifier);
                     break;
                 case NodeType.Literal:
-                    name = InterpretLiteralAssignment(statement.Identifier);
+                    name = GetLiteralIdentifier(statement.Identifier);
                     break;
                 default:
                     return;
             }
 
-            foreach(ExpressionNode node in statement.ParameterNames)
+            foreach (ExpressionNode node in statement.ParameterNames)
             {
                 if (node.Type != NodeType.Literal) continue;
                 var param = node as LiteralNode;
@@ -187,8 +213,8 @@ namespace C_Double_Flat.Core.Runtime
 
             var function = new UserFunction(args, statement.Statement, Dir);
             SetFunction(name, function);
-        } 
-        private (IVariable,bool) InterpretRun(RunStatement runStatement)
+        }
+        private (IVariable, bool) InterpretRun(RunStatement runStatement)
         {
             var path = InterpretExpression(runStatement.RelativeLocation).AsString();
             try
@@ -201,7 +227,7 @@ namespace C_Double_Flat.Core.Runtime
                     );
             }
             catch { /* oopsie */ }
-            return (ValueVariable.Default,false);
+            return (ValueVariable.Default, false);
 
         }
         private (IVariable, bool) InterpretIf(IfStatement ifStatement)
@@ -238,10 +264,10 @@ namespace C_Double_Flat.Core.Runtime
             switch (assignmentStatement.Identifier.Type)
             {
                 case NodeType.Literal:
-                    assignment = InterpretLiteralAssignment(assignmentStatement.Identifier);
+                    assignment = GetLiteralIdentifier(assignmentStatement.Identifier);
                     break;
                 case NodeType.AsName:
-                    assignment = InterpretAsNameAssignment(assignmentStatement.Identifier);
+                    assignment = GetAsNameIdentifier(assignmentStatement.Identifier);
                     break;
                 case NodeType.CollectionCall:
                     // Collection Call setting (i.e. asd <- [1] : 1; ) is special and requires different method
@@ -261,10 +287,10 @@ namespace C_Double_Flat.Core.Runtime
             switch (collectionCallNode.Caller.Type)
             {
                 case NodeType.Literal:
-                    assignment = InterpretLiteralAssignment(collectionCallNode.Caller);
+                    assignment = GetLiteralIdentifier(collectionCallNode.Caller);
                     break;
                 case NodeType.AsName:
-                    assignment = InterpretAsNameAssignment(collectionCallNode.Caller);
+                    assignment = GetAsNameIdentifier(collectionCallNode.Caller);
                     break;
                 default:
                     return;
@@ -280,12 +306,22 @@ namespace C_Double_Flat.Core.Runtime
             }
 
         }
-        private string InterpretAsNameAssignment(ExpressionNode node)
+        private string GetFunctionCallIdentifier(ExpressionNode node)
+        {
+            FunctionCallNode colnode = (FunctionCallNode)node;
+            return colnode.Caller.Type switch
+            {
+                NodeType.Literal => GetLiteralIdentifier(colnode.Caller),
+                NodeType.AsName => GetAsNameIdentifier(colnode.Caller),
+                _ => ""
+            };
+        }
+        private string GetAsNameIdentifier(ExpressionNode node)
         {
             AsNameNode asnnode = (AsNameNode)node;
             return InterpretExpression(asnnode.Identifier).AsString();
         }
-        private static string InterpretLiteralAssignment(ExpressionNode node)
+        private static string GetLiteralIdentifier(ExpressionNode node)
         {
             LiteralNode litnode = (LiteralNode)node;
             return litnode.Value.Data;

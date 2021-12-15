@@ -1,9 +1,5 @@
-﻿using System;
+﻿using C_Double_Flat.Core.Utilities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using C_Double_Flat.Core.Utilities;
 
 namespace C_Double_Flat.Core.Parser
 {
@@ -25,7 +21,8 @@ namespace C_Double_Flat.Core.Parser
             return new Parser(tokens, isNested).Parse();
         }
 
-        private Statement Parse() {
+        private Statement Parse()
+        {
 
             List<Statement> output = new();
 
@@ -38,21 +35,24 @@ namespace C_Double_Flat.Core.Parser
             return new StatementBlock(output);
         }
 
-        private Token Peek(int amount = 1) {
+        private Token Peek(int amount = 1)
+        {
             return (Index + amount < Tokens.Length) ? Tokens[Index + amount] : Tokens[^1];
         }
 
-        private Token Next() {
+        private Token Next()
+        {
             Token current = CurrentToken;
             Index++;
             return current;
         }
 
-        private Token ExpectThenNext(TokenType type) {
+        private Token ExpectThenNext(TokenType type)
+        {
             if (CurrentToken.Type == type) return Next();
 
             throw new ExpectedTokenException(CurrentToken.Position, CurrentToken.Type, type);
-        
+
         }
 
     }

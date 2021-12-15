@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace C_Double_Flat.Core.Utilities
 {
@@ -12,8 +8,9 @@ namespace C_Double_Flat.Core.Utilities
         : base($"Invalid token: '{token}' at Line: {pos.Row} Column: {pos.Column}") { }
     }
 
-    public class TerminatingStringException : Exception {
-        public TerminatingStringException(Position pos) 
+    public class TerminatingStringException : Exception
+    {
+        public TerminatingStringException(Position pos)
         : base($"Invalid string starting at Line: {pos.Row} Column: {pos.Column}") { }
     }
 
@@ -23,7 +20,7 @@ namespace C_Double_Flat.Core.Utilities
         : base($"Invalid number formatting at Line: {pos.Row} Column: {pos.Column}") { }
     }
 
-    public class ExpectedTokenException: Exception
+    public class ExpectedTokenException : Exception
     {
         public ExpectedTokenException(Position pos, TokenType type)
         : base($"Unexpected token {type} at Line: {pos.Row} Column: {pos.Column}") { }

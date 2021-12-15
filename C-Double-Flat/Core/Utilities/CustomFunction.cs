@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using C_Double_Flat.Core.Runtime;
 
 namespace C_Double_Flat.Core.Utilities
 {
     public class CustomFunction : IFunction
     {
-        public string Name { get; private set; }        
+        public string Name { get; private set; }
 
         private readonly Func<List<IVariable>, IVariable> Function;
         public IVariable Run(List<IVariable> variables)

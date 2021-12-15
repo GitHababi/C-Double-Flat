@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace C_Double_Flat.Core.Utilities
+﻿namespace C_Double_Flat.Core.Utilities
 {
     /* Faster to implicitly convert than to check the type each type.*/
     public enum NodeType
@@ -15,7 +9,8 @@ namespace C_Double_Flat.Core.Utilities
         FunctionCall,
         CollectionCall,
         AsName,
-        Variable
+        Variable,
+        Not
     }
 
     public enum StatementType
@@ -29,5 +24,6 @@ namespace C_Double_Flat.Core.Utilities
         Run,
         Loop,
         Repeat,
+        Dispose
     }
 }

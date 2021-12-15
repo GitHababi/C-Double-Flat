@@ -23,6 +23,9 @@
 	  <Optimize>False</Optimize>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Content Include="cbb_logo.ico" />
+	</ItemGroup>
+	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 	<ItemGroup>

@@ -1,5 +1,5 @@
-﻿using System;
-using C_Double_Flat.Core.Utilities;
+﻿using C_Double_Flat.Core.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -271,6 +271,12 @@ namespace StandardLibrary
                         return ValueVariable.Default;
 
                     return new ValueVariable(p[0].AsBool());
+                }),
+
+                new("exit", p =>
+                {
+                    Environment.Exit(0);
+                    return ValueVariable.Default;
                 }),
                 #endregion
             };

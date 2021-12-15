@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace C_Double_Flat.Core.Utilities
+﻿namespace C_Double_Flat.Core.Utilities
 {
     public struct Value
     {
@@ -15,12 +9,12 @@ namespace C_Double_Flat.Core.Utilities
         {
             this.Type = node.Value.Type.ToValueType();
             this.Data = node.Value.Data;
-        } 
+        }
 
         public Value(ValueType type, string data)
         {
-            this.Type=type;
-            this.Data=data;
+            this.Type = type;
+            this.Data = data;
         }
 
         public override string ToString()

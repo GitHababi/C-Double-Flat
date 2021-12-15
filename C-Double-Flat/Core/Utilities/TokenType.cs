@@ -27,6 +27,7 @@
 
         Or,
         And,
+        Not,
 
         If,
         Else,
@@ -37,6 +38,7 @@
         AsName,
         Global,
         Local,
+        Dispose,
 
         LeftParenthesis,
         RightParenthesis,

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
-using C_Double_Flat.Core.Parser;
-using C_Double_Flat.Core.Utilities;
+﻿using C_Double_Flat.Core.Parser;
 using C_Double_Flat.Core.Runtime;
+using C_Double_Flat.Core.Utilities;
+using System;
+using System.IO;
 using System.Reflection;
 namespace C_Double_Flat
 {
@@ -16,6 +12,7 @@ namespace C_Double_Flat
         public static void Main(string[] args)
         {
             LoadLibraries();
+            Console.Title = "C Double Flat";
             if (args.Length > 0)
             {
                 if (File.Exists(args[0]))
@@ -42,11 +39,16 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL 2.0.0-rc.2");
+                Console.WriteLine("C Double Flat - REPL 2.0.0");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
             }
 
+            REPL();
+        }
+
+        private static void REPL()
+        {
             while (true)
             {
                 try
@@ -60,7 +62,9 @@ namespace C_Double_Flat
                         tokens = Lexer.Tokenize(File.ReadAllText(input));
                     else
                         tokens = Lexer.Tokenize(input);
+                    //tokens.ToList().ForEach(x => Console.WriteLine(x));
                     var statements = Parser.Parse(tokens);
+                    //Console.WriteLine(statements);
                     var output = Interpreter.Interpret(statements, File.Exists(input) ? Path.GetDirectoryName(input) : Location);
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
@@ -75,8 +79,10 @@ namespace C_Double_Flat
 
             }
         }
+
         private static void LoadLibraries()
         {
+            Console.Title = "Loading...";
             string librariesPath = Path.Combine(Location, @"lib\");
             if (!Directory.Exists(librariesPath)) Directory.CreateDirectory(librariesPath);
 
@@ -84,13 +90,17 @@ namespace C_Double_Flat
 
             foreach (var file in files)
             {
-                var errors = AddFunctionsFromPath(file);
-                if (errors != "")
+                if (file.EndsWith(".dll"))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"An error occured while loading library '{file}':");
-                    Console.WriteLine(errors);
-                    Console.ResetColor();
+                    var errors = AddFunctionsFromPath(file);
+                    if (errors != "")
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"An error occured while loading library '{Path.GetFileName(file)}':");
+                        Console.WriteLine(errors);
+                        Console.ResetColor();
+                    }
+
                 }
             }
         }

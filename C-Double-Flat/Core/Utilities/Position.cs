@@ -1,6 +1,7 @@
 ﻿namespace C_Double_Flat.Core.Utilities
 {
-    public struct Position {
+    public struct Position
+    {
         public int Row;
         public int Column;
         public int Index;

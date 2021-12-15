@@ -1,9 +1,5 @@
-﻿using System;
+﻿using C_Double_Flat.Core.Utilities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using C_Double_Flat.Core.Utilities;
 namespace C_Double_Flat.Core.Parser
 {
     public partial class Parser
@@ -46,8 +42,11 @@ namespace C_Double_Flat.Core.Parser
                     output = ParseCollectionExpression();
                     break;
                 case TokenType.AsName:
-                    output =  ParseAsName();
+                    output = ParseAsName();
                     break;
+                case TokenType.Not:
+                    var notPos = Next().Position;
+                    return new NotNode(notPos, ParsePrimaryExpression());
                 case TokenType.Minus:
                     var minusPos = Next().Position;
                     return new BinaryOperationNode(
@@ -80,14 +79,14 @@ namespace C_Double_Flat.Core.Parser
             ExpectThenNext(TokenType.RightParenthesis);
 
             // If after asname, could be collection call or function call through asname
-            if (CurrentToken.Type == TokenType.Insertion && Peek().Type == TokenType.LeftParenthesis) 
+            if (CurrentToken.Type == TokenType.Insertion && Peek().Type == TokenType.LeftParenthesis)
             {
-                
-                    Next(); Next();
-                    var parameters = ParseExpressionList();
-                    ExpectThenNext(TokenType.RightParenthesis);
-                    return new FunctionCallNode(position, new AsNameNode(position,identifier), parameters);
-                
+
+                Next(); Next();
+                var parameters = ParseExpressionList();
+                ExpectThenNext(TokenType.RightParenthesis);
+                return new FunctionCallNode(position, new AsNameNode(position, identifier), parameters);
+
             }
             return new AsNameNode(position, identifier);
         }
@@ -112,7 +111,7 @@ namespace C_Double_Flat.Core.Parser
         {
             if (Peek(1).Type == TokenType.Insertion)
             {
-                if (Peek(2).Type == TokenType.LeftParenthesis) 
+                if (Peek(2).Type == TokenType.LeftParenthesis)
                     return ParseIdentifierFunctionCall();
             }
             return new LiteralNode(Next());
