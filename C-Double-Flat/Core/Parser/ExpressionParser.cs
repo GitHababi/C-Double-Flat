@@ -24,7 +24,7 @@ namespace C_Double_Flat.Core.Parser
             return left;
         }
 
-        private ExpressionNode ParseBinaryExpression(ExpressionNode left,int parentPrecedence = 0)
+        private ExpressionNode ParseBinaryExpression(ExpressionNode left, int parentPrecedence = 0)
         {
             while (true)
             {
@@ -76,7 +76,7 @@ namespace C_Double_Flat.Core.Parser
 
             }
 
-            // Check if this primary node is a array assignment
+            // Check if this primary node is an array assignment
             while (CurrentToken.Type == TokenType.LeftSquareBracket)
             {
                 ExpectThenNext(TokenType.LeftSquareBracket);
@@ -127,7 +127,7 @@ namespace C_Double_Flat.Core.Parser
         {
             if (Peek(1).Type == TokenType.LeftParenthesis)
             {
-                    return ParseIdentifierFunctionCall();
+                return ParseIdentifierFunctionCall();
             }
             return new LiteralNode(Next());
         }

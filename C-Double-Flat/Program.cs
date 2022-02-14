@@ -60,9 +60,9 @@ namespace C_Double_Flat
                         tokens = Lexer.Tokenize(File.ReadAllText(input));
                     else
                         tokens = Lexer.Tokenize(input);
-                    //tokens.ToList().ForEach(x => Console.WriteLine(x));
+                    // tokens.ToList().ForEach(x => Console.WriteLine(x));
                     var statements = Parser.Parse(tokens);
-                    //Console.WriteLine(statements);
+                    // Console.WriteLine(statements);
                     var output = Interpreter.Interpret(statements, File.Exists(input) ? Path.GetDirectoryName(input) : Location);
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
@@ -72,7 +72,7 @@ namespace C_Double_Flat
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Error.WriteLine(e.Message);
-                    //Console.Error.WriteLine(e.StackTrace);
+                    // Console.Error.WriteLine(e.StackTrace);
                     Console.ResetColor();
                 }
 
