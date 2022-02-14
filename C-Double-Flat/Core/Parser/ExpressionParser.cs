@@ -24,6 +24,23 @@ namespace C_Double_Flat.Core.Parser
             return left;
         }
 
+        private ExpressionNode ParseBinaryExpression(ExpressionNode left,int parentPrecedence = 0)
+        {
+            while (true)
+            {
+
+                int precedence = CurrentToken.GetPrecedence();
+                if (precedence == 0 || precedence <= parentPrecedence)
+                    break;
+                Token operation = Next();
+                ExpressionNode right = ParseBinaryExpression(precedence);
+
+                left = new BinaryOperationNode(left, operation, right);
+            }
+
+            return left;
+        }
+
         private ExpressionNode ParsePrimaryExpression()
         {
             ExpressionNode output;
@@ -60,9 +77,8 @@ namespace C_Double_Flat.Core.Parser
             }
 
             // Check if this primary node is a array assignment
-            while (CurrentToken.Type == TokenType.Insertion && Peek(1).Type == TokenType.LeftSquareBracket)
+            while (CurrentToken.Type == TokenType.LeftSquareBracket)
             {
-                ExpectThenNext(TokenType.Insertion);
                 ExpectThenNext(TokenType.LeftSquareBracket);
                 var location = ParseBinaryExpression();
                 ExpectThenNext(TokenType.RightSquareBracket);
@@ -79,10 +95,10 @@ namespace C_Double_Flat.Core.Parser
             ExpectThenNext(TokenType.RightParenthesis);
 
             // If after asname, could be collection call or function call through asname
-            if (CurrentToken.Type == TokenType.Insertion && Peek().Type == TokenType.LeftParenthesis)
+            if (CurrentToken.Type == TokenType.LeftParenthesis)
             {
 
-                Next(); Next();
+                ExpectThenNext(TokenType.LeftParenthesis); 
                 var parameters = ParseExpressionList();
                 ExpectThenNext(TokenType.RightParenthesis);
                 return new FunctionCallNode(position, new AsNameNode(position, identifier), parameters);
@@ -109,9 +125,8 @@ namespace C_Double_Flat.Core.Parser
 
         private ExpressionNode ParseIdentifierCall()
         {
-            if (Peek(1).Type == TokenType.Insertion)
+            if (Peek(1).Type == TokenType.LeftParenthesis)
             {
-                if (Peek(2).Type == TokenType.LeftParenthesis)
                     return ParseIdentifierFunctionCall();
             }
             return new LiteralNode(Next());
@@ -120,7 +135,6 @@ namespace C_Double_Flat.Core.Parser
         private ExpressionNode ParseIdentifierFunctionCall()
         {
             var caller = ExpectThenNext(TokenType.Identifier);
-            ExpectThenNext(TokenType.Insertion);
             ExpectThenNext(TokenType.LeftParenthesis);
             var args = ParseExpressionList();
             ExpectThenNext(TokenType.RightParenthesis);
@@ -131,16 +145,14 @@ namespace C_Double_Flat.Core.Parser
         private List<ExpressionNode> ParseExpressionList() // TODO: fix this, not worky.
         {
             List<ExpressionNode> output = new();
-            bool parseNextArgument = true;
             while (CurrentToken.Type != TokenType.RightSquareBracket &&
                    CurrentToken.Type != TokenType.RightParenthesis &&
-                   CurrentToken.Type != TokenType.EndOfFile &&
-                   parseNextArgument)
+                   CurrentToken.Type != TokenType.EndOfFile)
             {
 
                 output.Add(ParseBinaryExpression());
                 if (CurrentToken.Type == TokenType.Comma) Next();
-                else parseNextArgument = false;
+                else break;
             }
             return output;
         }

@@ -20,6 +20,8 @@ namespace C_Double_Flat.Core.Runtime
                     return InterpretBinaryExpression((BinaryOperationNode)node);
                 case NodeType.FunctionCall:
                     return InterpretFunctionCall((FunctionCallNode)node);
+                case NodeType.AsName:
+                    return GetVariable(InterpretExpression(((AsNameNode)node).Identifier).AsString());
                 case NodeType.Literal:
                     if (((LiteralNode)node).Value.Type == Utilities.TokenType.Identifier)
                         return GetVariable(((LiteralNode)node).Value.Data);
@@ -82,8 +84,15 @@ namespace C_Double_Flat.Core.Runtime
             node.Parameters.ForEach(p => parameters.Add(InterpretExpression(p)));
 
             var function = GetFunction(name);
-
-            return function.Run(parameters);
+            try
+            {
+                return function.Run(parameters);
+            }
+            catch
+            { 
+                /* oopsie */
+                return ValueVariable.Default;
+            }
 
         }
 

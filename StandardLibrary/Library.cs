@@ -29,6 +29,14 @@ namespace StandardLibrary
                     return ValueVariable.Default;
                 }),
 
+                new ("disp_title", p => 
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    Console.Title = p[0].AsString();
+                    return ValueVariable.Default;
+                }),
+
                 new("disp_color", p =>
                 {
                     if (p.Count < 1)
@@ -196,6 +204,23 @@ namespace StandardLibrary
                 #endregion
 
                 #region String
+
+                new("str_substr", p => 
+                {
+                    if (p.Count < 2)
+                        return ValueVariable.Default;
+                    if (p.Count < 3)
+                        return new ValueVariable(p[0].AsString()[(int)(p[1].AsDouble() - 1)..] );
+                    return new ValueVariable(p[0].AsString()[(int)(p[1].AsDouble() - 1)..(int)(p[2].AsDouble() - 1)]);
+                }),
+
+                new("str_size", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    return new ValueVariable(p[0].AsString().Length);
+                }),
 
                 new("str_has", p =>
                 {

@@ -1,4 +1,5 @@
 ﻿using C_Double_Flat.Core.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace C_Double_Flat.Core.Parser
@@ -30,9 +31,6 @@ namespace C_Double_Flat.Core.Parser
                     return ParseVarAssignment();
                 case TokenType.Run:
                     return ParseRunStatement();
-                case TokenType.Identifier:
-                    if (IsAssignmentStatement()) return ParseFunctionStatement(scoped);
-                    return ParseExpressionStatement();
                 case TokenType.LeftCurlyBracket:
                     return ParseStatementBlock(scoped);
                 case TokenType.Return:
@@ -45,8 +43,9 @@ namespace C_Double_Flat.Core.Parser
                     return ParseIfStatement(scoped);
                 case TokenType.Else:
                     return ParseLoneElseStatement(scoped);
+                case TokenType.Identifier:
                 case TokenType.AsName:
-                    return ParseAmbiguousAsName(scoped);
+                    return ParseAmbiguousDeclaration();
                 case TokenType.Dispose:
                     return ParseDisposeStatement();
                 default:
@@ -60,52 +59,23 @@ namespace C_Double_Flat.Core.Parser
             ExpectThenNext(TokenType.SemiColon);
             return new DisposeStatement(position, disposer);
         }
-        /// <summary>
-        /// Checks if parser will hit assignment or semicolon first, determining whether it is parsing some sort of
-        /// assignment or an expression
-        /// </summary>
-        /// <returns></returns>
-        private bool IsAssignmentStatement()
+
+        private Statement ParseAmbiguousDeclaration()
         {
-            var assignment = false;
-            for (int peeker = 0; peeker < (Tokens.Length - Index); peeker++)
-            {
-                if (Peek(peeker).Type == TokenType.Assignment) { assignment = true; break; }
-                if (Peek(peeker).Type == TokenType.SemiColon) { assignment = false; break; }
-            }
-            return assignment;
-        }
-        private Statement ParseAmbiguousAsName(bool scoped = false)
-        {
-            // Determine whether it is just an assignment or an expression statement
-
-
-            if (!IsAssignmentStatement()) return ParseExpressionStatement();
-
-            // Now it is determined to be an assignment or function declaration
-            // We can use similar code to that of ParseFunctionStatement
-
+            var position = CurrentToken.Position;
             var identifier = ParsePrimaryExpression();
+            if (Peek(0).Type != TokenType.Assignment) // Filter out any regular expression statements
+            {
+                var expression = ParseBinaryExpression(identifier);
+                ExpectThenNext(TokenType.SemiColon);
+                return new ExpressionStatement(position, expression);
+            }
             ExpectThenNext(TokenType.Assignment);
             var statement = ParseStatement();
-
-            var parameters = new List<ExpressionNode>();
-            // Parse Parameters if necessary. 
-            if (CurrentToken.Type == TokenType.Insertion)
-            {
-                Next();
-                ExpectThenNext(TokenType.LeftParenthesis);
-                parameters = ParseExpressionList();
-                ExpectThenNext(TokenType.RightParenthesis);
-                ExpectThenNext(TokenType.SemiColon);
-            }
-
-            if (statement.Type == StatementType.Expression)
-                return new AssignmentStatement(identifier.Position, identifier, ((ExpressionStatement)statement).Expression, false);
-
-            return new FunctionStatement(identifier.Position, identifier, statement, parameters);
+            if (identifier.Type == NodeType.FunctionCall)
+                return new FunctionStatement(position, ((FunctionCallNode)identifier).Caller, statement, ((FunctionCallNode)identifier).Parameters);
+            else return new AssignmentStatement(position, identifier, ((ExpressionStatement)statement).Expression, false);
         }
-
 
         private Statement ParseRunStatement()
         {
@@ -187,29 +157,7 @@ namespace C_Double_Flat.Core.Parser
             return new ReturnStatement(position, expression);
         }
 
-        private Statement ParseFunctionStatement(bool scoped = false)
-        {
-            var identifier = ParsePrimaryExpression();
-            ExpectThenNext(TokenType.Assignment);
-            var statement = ParseStatement(true);
-            var parameters = new List<ExpressionNode>();
-
-            // Parse Parameters if necessary. 
-            if (CurrentToken.Type == TokenType.Insertion)
-            {
-                Next();
-                parameters = ParseExpressionList();
-                ExpectThenNext(TokenType.SemiColon);
-            }
-
-            // If no args declared, stmt may be var assignment, not function assignment.
-            else if (statement.Type == StatementType.Expression)
-                return new AssignmentStatement(identifier.Position, identifier, ((ExpressionStatement)statement).Expression, false);
-
-            return new FunctionStatement(identifier.Position, identifier, statement, parameters);
-        }
-
-
+       
         private Statement ParseExpressionStatement()
         {
             var position = CurrentToken.Position;

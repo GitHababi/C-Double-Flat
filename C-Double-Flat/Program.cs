@@ -8,7 +8,7 @@ namespace C_Double_Flat
 {
     public class Program
     {
-        public static string Location = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string Location = AppDomain.CurrentDomain.BaseDirectory;
         public static void Main(string[] args)
         {
             LoadLibraries();
@@ -24,8 +24,6 @@ namespace C_Double_Flat
                         var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
                         Console.ForegroundColor = ConsoleColor.DarkGray;
                         Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
-                        Console.ResetColor();
-                        Console.ReadKey(false);
                         Environment.Exit(0);
 
                     }
@@ -39,7 +37,7 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL 2.0.0");
+                Console.WriteLine("C Double Flat - REPL 2.1.0");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
             }
@@ -74,6 +72,7 @@ namespace C_Double_Flat
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Error.WriteLine(e.Message);
+                    //Console.Error.WriteLine(e.StackTrace);
                     Console.ResetColor();
                 }
 
@@ -104,7 +103,7 @@ namespace C_Double_Flat
                 }
             }
         }
-        private static string AddFunctionsFromPath(string libraryPath)
+        public static string AddFunctionsFromPath(string libraryPath)
         {
 
             try

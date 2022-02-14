@@ -220,6 +220,14 @@ namespace C_Double_Flat.Core.Runtime
             try
             {
                 path = File.Exists(path) ? path : Path.Combine(Dir, path);
+                if (path.EndsWith(".dll"))
+                {
+                   Program.AddFunctionsFromPath(path);
+                    return (ValueVariable.Default, false);
+                }
+                   
+                
+
                 var data = File.ReadAllText(path);
                 return Interpret(
                     Parser.Parser.Parse(Lexer.Tokenize(data)),
@@ -270,7 +278,7 @@ namespace C_Double_Flat.Core.Runtime
                     assignment = GetAsNameIdentifier(assignmentStatement.Identifier);
                     break;
                 case NodeType.CollectionCall:
-                    // Collection Call setting (i.e. asd <- [1] : 1; ) is special and requires different method
+                    // Collection Call setting (i.e. asd[1] : 1; ) is special and requires different method
                     InterpretCollectionLocationAssignment(assignmentStatement);
                     return;
                 default:
