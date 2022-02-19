@@ -66,6 +66,20 @@ namespace StandardLibrary
                         case "darkyellow":
                             color = ConsoleColor.DarkYellow;
                             break;
+                        case "darkgray":
+                            color = ConsoleColor.DarkGray;
+                            break;
+                        // alternate spelling
+                        case "darkgrey":
+                            color = ConsoleColor.DarkGray;
+                            break;
+                        case "gray":
+                            color = ConsoleColor.Gray;
+                            break;
+                        // alternate spelling
+                        case "grey":
+                            color = ConsoleColor.Gray;
+                            break;
                         case "green":
                             color = ConsoleColor.Green;
                             break;
@@ -94,17 +108,31 @@ namespace StandardLibrary
                 #region Math
 
                 new("math_abs", p =>
-                        {
-                            if (p.Count < 1)
-                                return ValueVariable.Default;
-                            return new ValueVariable(Math.Abs(p[0].AsDouble()));
-                        }),
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Abs(p[0].AsDouble()));
+                }),
 
                 new("math_round", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
                     return new ValueVariable(Math.Round(p[0].AsDouble()));
+                }),
+
+                new("math_ceil", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Ceiling(p[0].AsDouble())); 
+                }),
+
+                new("math_floor", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Floor(p[0].AsDouble())); 
                 }),
 
                 new("math_pow", p =>
@@ -135,11 +163,40 @@ namespace StandardLibrary
                     if (p.Count < 1)
                         return ValueVariable.Default;
                     if (p.Count < 2)
-                    {
                         return new ValueVariable(random.Next((int)p[0].AsDouble() - 1) + 1);
-                    }
                     return new ValueVariable(random.Next((int)p[0].AsDouble(), (int)p[1].AsDouble() + 1));
                 }),
+
+                new("math_sin", p => 
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Sin(p[0].AsDouble())); 
+                }),
+
+                new("math_cos", p => 
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Cos(p[0].AsDouble())); 
+                }),
+
+                new("math_tan", p => 
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Tan(p[0].AsDouble())); 
+                }),
+
+                new("math_log", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    if (p.Count < 2)
+                        return new ValueVariable(Math.Log(p[0].AsDouble())); 
+                    return new ValueVariable(Math.Log(p[0].AsDouble(), p[1].AsDouble()));
+
+                })
 
                 #endregion
 
@@ -218,7 +275,6 @@ namespace StandardLibrary
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-
                     return new ValueVariable(p[0].AsString().Length);
                 }),
 
@@ -226,7 +282,6 @@ namespace StandardLibrary
                 {
                     if (p.Count < 2)
                         return ValueVariable.Default;
-
                     return new ValueVariable(p[0].AsString().Contains(p[1].AsString()));
                 }),
 
@@ -270,6 +325,18 @@ namespace StandardLibrary
 
                     return new ValueVariable(p[0].AsString().ToLower());
                 }),
+
+                new("str_trim", p => 
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    
+                    if (p.Count < 2)
+                        return new ValueVariable(p[0].Trim());
+                        
+                    return new ValueVariable(p[0].Trim(1)); 
+                }),
+
                 #endregion
 
                 #region Misc
