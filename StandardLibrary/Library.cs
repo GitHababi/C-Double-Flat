@@ -196,7 +196,7 @@ namespace StandardLibrary
                         return new ValueVariable(Math.Log(p[0].AsDouble())); 
                     return new ValueVariable(Math.Log(p[0].AsDouble(), p[1].AsDouble()));
 
-                })
+                }),
 
                 #endregion
 
