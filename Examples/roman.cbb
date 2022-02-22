@@ -1,0 +1,64 @@
+# two different ways of taking numbers and returning roman numerals.
+# the first example may throw a stackoverflow exception if the number is sufficiently large enough.
+# the second example wont do that, although it may look more ugly.
+
+roman_numeral_recursive(number): {
+	output : "";
+	
+	if number >= 1000:
+		return "M" + roman_numeral_recursive(number - 1000); 
+	if number >= 900: 
+		return "CM" + roman_numeral_recursive(number - 900); 
+	if number >= 500: 
+		return "D" + roman_numeral_recursive(number - 500); 
+	if number >= 400: 
+		return "CD" + roman_numeral_recursive(number - 400); 
+	if number >= 100: 
+		return "C" + roman_numeral_recursive(number - 100); 
+	if number >= 90: 
+		return "XC" + roman_numeral_recursive(number - 90); 
+	if number >= 50: 
+		return "L" + roman_numeral_recursive(number - 50); 
+	if number >= 40: 
+		return "XL" + roman_numeral_recursive(number - 40); 
+	if number >= 10: 
+		return "X" + roman_numeral_recursive(number - 10); 
+	if number >= 9: 
+		return "IX" + roman_numeral_recursive(number - 9); 
+	if number >= 5: 
+		return "V" + roman_numeral_recursive(number - 5); 
+	if number >= 4: 
+		return "IV" + roman_numeral_recursive(number - 4); 
+	if number >= 1: 
+		return "I" + roman_numeral_recursive(number - 1); 
+	
+	
+	return output;
+
+}
+
+roman_numeral(number) : {
+	output : "";
+	
+	loop number > 0: {
+		if number >= 1000: {output : output + "M"; number : number - 1000; }
+		else : if number >= 900: {output : output + "CM";number : number - 900; }
+		else : if number >= 500: {output : output + "D"; number : number - 500; }
+		else : if number >= 400: {output : output + "CD"; number : number - 400; }
+		else : if number >= 100: {output : output + "C"; number : number - 100; }
+		else : if number >= 90: {output : output + "XC"; number : number - 90; }
+		else : if number >= 50: {output : output + "L"; number : number - 50; }
+		else : if number >= 40: {output : output + "XL"; number : number - 40; }
+		else : if number >= 10: {output : output + "X"; number : number - 10; }
+		else : if number >= 9: {output : output + "IX"; number : number - 9; }
+		else : if number >= 5: {output : output + "V"; number : number - 5; }
+		else : if number >= 4: {output : output + "IV"; number : number - 4; }
+		else : if number >= 1: {output : output + "I"; number : number - 1; }
+	}
+
+	return output;
+}
+
+disp_echo(roman_numeral(78));
+disp_echo(roman_numeral_recursive(67));
+disp_prompt();

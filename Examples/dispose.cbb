@@ -1,0 +1,13 @@
+# example of how dispose works
+
+foo : 12;
+
+disp_echo(foo);
+# prints out the value of foo.
+
+dispose foo;
+
+disp_echo(foo);
+# prints out the default value variable (0) because foo is no longer a variable.
+
+disp_prompt();

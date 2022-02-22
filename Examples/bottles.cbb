@@ -1,0 +1,23 @@
+# given a number, it this function will print the corresponding amount of bottles of beer on the wall
+
+bottles_of_beer(beer_number): {
+
+	loop beer_number > 1 : {
+		disp_echo(beer_number," bottles of beer on the wall, ", beer_number, " bottles of beer.");
+		
+		beer_number : beer_number - 1;
+		
+		if beer_number = 1 : 
+			disp_echo("Take one down pass it around, 1 bottle of beer on the wall.");
+		else :
+			disp_echo("Take one down pass it around, ", beer_number, " bottles of beer on the wall.");
+	}
+	
+	disp_echo("1 bottle of beer on the wall, 1 bottle of beer.");
+	
+	disp_echo("Take one down pass it around, no bottles of beer on the wall.");
+
+}
+
+bottles_of_beer(100);
+disp_prompt();

@@ -1,0 +1,15 @@
+# this example here helped reveal a bug i made, and therefore fixed it here.
+# now compatible with 2.0.0
+reverse_string(string): {
+	output : "";
+	arr : str_to_col(string);
+	repeat arr: {
+		output : output + arr[to_num(arr) - index];
+		index : index + 1;
+	} 
+
+	return output;
+}
+
+disp_echo(reverse_string("Erad Tsood Rik Nedia"));
+disp_prompt();

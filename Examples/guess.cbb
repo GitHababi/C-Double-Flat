@@ -1,0 +1,28 @@
+# this is a modified version of the first ever cbb program.
+# it will generate a random number between 1 and 100, then you must input an answer
+# until you get the correct one.
+
+guess_my_number(max): {
+	
+	answer : math_rand(1,max);
+	
+	
+	disp_echo("I have chosen a number between 1 through ", max,", can you guess my number?");
+	
+	loop correct + 1 : {
+	
+		guess : disp_prompt();
+	
+		if answer = to_num(guess) : {
+		
+			disp_echo("Yes! That is the number I chose!") ;
+			correct: true;
+		
+		} else : 
+			if answer > to_num(guess) : disp_echo("My number is higher!");
+			else : disp_echo("My number is lower!");
+	}
+}
+
+guess_my_number(100);
+disp_prompt();
