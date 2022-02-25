@@ -1,8 +1,8 @@
 monte_carlo_pi(nsamples) : {
 	acc : 0;
 	repeat nsamples: {
-		x : math_rand<-(0,100) / 100;
-		y : math_rand<-(0,100) / 100;
+		x : math_rand(0,100) / 100;
+		y : math_rand(0,100) / 100;
 		if (x*x) + (y*y) < 1.0: {
 			acc : acc + 1;
 		}
