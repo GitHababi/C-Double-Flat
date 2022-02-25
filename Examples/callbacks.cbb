@@ -1,0 +1,23 @@
+#
+# This file demonstrates how 'asname' can function as a way to implement callbacks.
+#
+
+function(argument, callback_name): {
+	disp_echo("This does something with: " +  argument);
+	asname(callback_name)(argument + 1);
+}
+
+
+callback_one(arg): {
+	disp_echo("This is callback 1: " + arg);
+}
+
+
+callback_two(arg) : {
+	disp_echo("This is callback 2: " + (arg + 2));
+}
+
+function(20, "callback_one");
+function(20, "callback_two");
+
+disp_prompt();
