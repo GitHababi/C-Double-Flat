@@ -330,11 +330,9 @@ namespace StandardLibrary
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    
-                    if (p.Count < 2)
-                        return new ValueVariable(p[0].Trim());
+
+                    return new ValueVariable(p[0].AsString().Trim());
                         
-                    return new ValueVariable(p[0].Trim(1)); 
                 }),
 
                 #endregion

@@ -149,7 +149,7 @@ namespace C_Double_Flat.Core.Parser
                         break;
                     else if (Char.IsDigit(CurrentChar))
                         output = TokenizeNumber();
-                    else if (Regex.IsMatch(CurrentChar.ToString(), @"[\w]"))
+                    else if (Regex.IsMatch(CurrentChar.ToString(), @"[&@$\w]"))
                         output = TokenizeWord();
                     else throw new InvalidTokenException(Position, CurrentChar);
                     break;
@@ -208,7 +208,7 @@ namespace C_Double_Flat.Core.Parser
 
             string accumulator = CurrentChar.ToString();
 
-            while (Peek() != default && !Regex.IsMatch(Peek().ToString(), @"[\W\s]"))
+            while (Peek() != default && Regex.IsMatch(Peek().ToString(), @"[&@$\w]"))
             {
                 Advance();
                 accumulator += CurrentChar;
