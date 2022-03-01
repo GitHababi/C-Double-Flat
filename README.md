@@ -5,7 +5,7 @@
 
 This is a programming language that was first intended to be esoteric, but ended up actually usable (a bit).
 I'll continue to update this so long as I am not bored and or dead. Soon, I will be creating documentation on this very Github page.
-Release 2.1.0 has been released, please submit bug reports so I know why I'm dumb.
+Release 2.2.0 has now been released, please submit bug reports so I know why I'm dumb.
 
-*Copyleft Hababisoft Corporation, 2021. All rights reserved.*\
+*Copyleft Hababisoft Corporation, 2021. All rights unreserved.*\
 *You could copy this code, but why would you? This sucks.*
