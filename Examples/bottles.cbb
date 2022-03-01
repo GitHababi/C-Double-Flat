@@ -1,4 +1,4 @@
-# given a number, it this function will print the corresponding amount of bottles of beer on the wall
+#given a number, it this function will print the corresponding amount of bottles of beer on the wall
 
 bottles_of_beer(beer_number): {
 

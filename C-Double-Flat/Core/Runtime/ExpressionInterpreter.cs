@@ -86,6 +86,7 @@ namespace C_Double_Flat.Core.Runtime
             var function = GetFunction(name);
             try
             {
+                Environment.CurrentDirectory = this.Dir; // ensure all execution happens where the interpreter is
                 return function.Run(parameters);
             }
             catch
@@ -102,35 +103,22 @@ namespace C_Double_Flat.Core.Runtime
 
             var right = InterpretExpression(node.Right);
 
-            switch (node.Operation.Type)
+            return node.Operation.Type switch
             {
-                case TokenType.Plus:
-                    return Add(left, right);
-                case TokenType.Minus:
-                    return Subtract(left, right);
-                case TokenType.Divide:
-                    return Divide(left, right);
-                case TokenType.Multiply:
-                    return Multiply(left, right);
-                case TokenType.Equal:
-                    return Equals(left, right);
-                case TokenType.NotEqual:
-                    return new ValueVariable(!Equals(left, right).AsBool());
-                case TokenType.LessThan:
-                    return LessThan(left, right);
-                case TokenType.GreaterThanOrEqual:
-                    return new ValueVariable(!LessThan(left, right).AsBool());
-                case TokenType.GreaterThan:
-                    return GreaterThan(left, right);
-                case TokenType.LessThanOrEqual:
-                    return new ValueVariable(!GreaterThan(left, right).AsBool());
-                case TokenType.And:
-                    return And(left, right);
-                case TokenType.Or:
-                    return Or(left, right);
-                default:
-                    throw new Exception($"Operation has invalid type '{node.Operation}' at Line: {node.Position.Row} Column: {node.Position.Column}");
-            }
+                TokenType.Plus => Add(left, right),
+                TokenType.Minus => Subtract(left, right),
+                TokenType.Divide => Divide(left, right),
+                TokenType.Multiply => Multiply(left, right),
+                TokenType.Equal => Equals(left, right),
+                TokenType.NotEqual => new ValueVariable(!Equals(left, right).AsBool()),
+                TokenType.LessThan => LessThan(left, right),
+                TokenType.GreaterThanOrEqual => new ValueVariable(!LessThan(left, right).AsBool()),
+                TokenType.GreaterThan => GreaterThan(left, right),
+                TokenType.LessThanOrEqual => new ValueVariable(!GreaterThan(left, right).AsBool()),
+                TokenType.And => And(left, right),
+                TokenType.Or => Or(left, right),
+                _ => throw new Exception($"Operation has invalid type '{node.Operation}' at Line: {node.Position.Row} Column: {node.Position.Column}"),
+            };
         }
         public static IVariable And(IVariable left, IVariable right)
         {
@@ -314,18 +302,12 @@ namespace C_Double_Flat.Core.Runtime
             var op1 = x.Item1;
             var op2 = x.Item2;
 
-            switch (op1.Value.Type)
+            op1.Value.Data = op1.Value.Type switch
             {
-                case Utilities.ValueType.Number:
-                    op1.Value.Data = (op1.AsDouble() + op2.AsDouble()).ToString();
-                    break;
-                case Utilities.ValueType.String:
-                    op1.Value.Data = op1.AsString() + op2.AsString();
-                    break;
-                default:
-                    throw new Exception($"ValueVariable has invalid type '{left.Value.Type}' while adding.");
-            }
-
+                Utilities.ValueType.Number => (op1.AsDouble() + op2.AsDouble()).ToString(),
+                Utilities.ValueType.String => op1.AsString() + op2.AsString(),
+                _ => throw new Exception($"ValueVariable has invalid type '{left.Value.Type}' while adding."),
+            };
             return op1;
         }
         #endregion

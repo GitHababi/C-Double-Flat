@@ -12,6 +12,15 @@ namespace C_Double_Flat.Core.Runtime
 
         private static readonly Dictionary<string, IFunction> Functions = new();
         private static readonly object _lock1 = new();
+        public static (IVariable, bool) Interpret(Statement statement, string dir)
+        {
+            return new Interpreter(dir).Interpret(statement);
+        }
+
+        private Interpreter(string dir)
+        {
+            this.Dir = dir;
+        }
 
         /// <summary>
         /// Safely gets a function from the Interpreter
@@ -119,18 +128,10 @@ namespace C_Double_Flat.Core.Runtime
             else
                 SetLocalVariable(key, value);
         }
-        public static (IVariable, bool) Interpret(Statement statement, string dir)
-        {
-            return new Interpreter(dir).Interpret(statement);
-        }
-
-        private Interpreter(string dir)
-        {
-            this.Dir = dir;
-        }
 
         private (IVariable, bool) Interpret(Statement statement)
         {
+            Environment.CurrentDirectory = this.Dir; // ensure all execution happens where the interpreter is
             switch (statement.Type)
             {
                 case StatementType.Dispose:
@@ -160,6 +161,7 @@ namespace C_Double_Flat.Core.Runtime
                 default:
                     break;
             }
+            Environment.CurrentDirectory = this.Dir;
             return (ValueVariable.Default, false);
         }
         private void InterpretDispose(DisposeStatement statement)
@@ -219,20 +221,16 @@ namespace C_Double_Flat.Core.Runtime
             var path = InterpretExpression(runStatement.RelativeLocation).AsString();
             try
             {
-                path = File.Exists(path) ? path : Path.Combine(Dir, path);
                 if (path.EndsWith(".dll"))
                 {
-                   Program.AddFunctionsFromPath(path);
+                    Program.AddFunctionsFromPath(path);
                     return (ValueVariable.Default, false);
                 }
-                   
-                
-
                 var data = File.ReadAllText(path);
-                return Interpret(
-                    Parser.Parser.Parse(Lexer.Tokenize(data)),
-                    Path.GetDirectoryName(path)
-                    );
+
+                var statements = Parser.Parser.Parse(Lexer.Tokenize(data));
+                var location = Path.GetDirectoryName(Path.Combine(Environment.CurrentDirectory, path));
+                return Interpret(statements, location);
             }
             catch { /* oopsie */ }
             return (ValueVariable.Default, false);

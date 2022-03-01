@@ -141,8 +141,11 @@ namespace C_Double_Flat.Core.Parser
                 case '}':
                     output = new(Position, TokenType.RightCurlyBracket);
                     break;
+                case '\'':
+                    output = TokenizeString('\'');
+                    break;
                 case '"':
-                    output = TokenizeString();
+                    output = TokenizeString('"');
                     break;
                 default: // Dealing with special tokens. (numbers/identifiers/keywords)
                     if (String.IsNullOrWhiteSpace(CurrentChar.ToString()))
@@ -237,7 +240,7 @@ namespace C_Double_Flat.Core.Parser
         /// Returns a string token when found in the input, not to be called independently.
         /// </summary>
         /// <returns></returns>
-        private Token TokenizeString()
+        private Token TokenizeString(char openDelim)
         {
             Token output = new(Position, TokenType.String, "");
 
@@ -249,9 +252,24 @@ namespace C_Double_Flat.Core.Parser
                 {
                     case '^':
                         Advance();
+                        output.Data += CurrentChar switch
+                        {
+                            't' => '\t',
+                            'n' => '\n',
+                            _ => CurrentChar
+                        };
+                        break;
+                    case '\'':
+                        if (openDelim == '\'')
+                            foundEnd = true;
+                        else
+                            output.Data += CurrentChar;
                         break;
                     case '"':
-                        foundEnd = true;
+                        if (openDelim == '"')
+                            foundEnd = true;
+                        else
+                            output.Data += CurrentChar;
                         break;
                     default:
                         output.Data += CurrentChar;

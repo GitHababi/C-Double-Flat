@@ -25,7 +25,6 @@ namespace C_Double_Flat
                         Console.ForegroundColor = ConsoleColor.DarkGray;
                         Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
                         Environment.Exit(0);
-
                     }
                     catch (Exception e)
                     {
@@ -37,7 +36,7 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL 2.1.0");
+                Console.WriteLine("C Double Flat - REPL 2.2.0");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
             }

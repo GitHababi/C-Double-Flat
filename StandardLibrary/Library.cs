@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace StandardLibrary
 {
@@ -11,6 +12,17 @@ namespace StandardLibrary
         {
             return new()
             {
+                new("disp_out", p =>
+                {
+                    p.ForEach(i => Console.Write(i.AsString()));
+                    return ValueVariable.Default;
+                }),
+
+                new("disp_in", p =>
+                {
+                    return new ValueVariable(Console.ReadKey().ToString());
+                }),
+
                 new("disp_echo", p =>
                 {
                     p.ForEach(i => Console.Write(i.AsString()));
@@ -29,7 +41,7 @@ namespace StandardLibrary
                     return ValueVariable.Default;
                 }),
 
-                new ("disp_title", p => 
+                new("disp_title", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
@@ -41,66 +53,29 @@ namespace StandardLibrary
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    ConsoleColor color = Console.ForegroundColor;
 
-                    switch (p[0].AsString().ToLower().Trim())
+                    Console.ForegroundColor = p[0].AsString().ToLower().Trim() switch
                     {
-                        case "black":
-                            color = ConsoleColor.Black;
-                            break;
-                        case "darkblue":
-                            color = ConsoleColor.DarkBlue;
-                            break;
-                        case "darkgreen":
-                            color = ConsoleColor.DarkGreen;
-                            break;
-                        case "darkcyan":
-                            color = ConsoleColor.DarkCyan;
-                            break;
-                        case "darkred":
-                            color = ConsoleColor.DarkRed;
-                            break;
-                        case "darkmagenta":
-                            color = ConsoleColor.DarkMagenta;
-                            break;
-                        case "darkyellow":
-                            color = ConsoleColor.DarkYellow;
-                            break;
-                        case "darkgray":
-                            color = ConsoleColor.DarkGray;
-                            break;
-                        // alternate spelling
-                        case "darkgrey":
-                            color = ConsoleColor.DarkGray;
-                            break;
-                        case "gray":
-                            color = ConsoleColor.Gray;
-                            break;
-                        // alternate spelling
-                        case "grey":
-                            color = ConsoleColor.Gray;
-                            break;
-                        case "green":
-                            color = ConsoleColor.Green;
-                            break;
-                        case "blue":
-                            color = ConsoleColor.Blue;
-                            break;
-                        case "yellow":
-                            color = ConsoleColor.Yellow;
-                            break;
-                        case "red":
-                            color = ConsoleColor.Red;
-                            break;
-                        case "magenta":
-                            color = ConsoleColor.Magenta;
-                            break;
-                        case "white":
-                            color = ConsoleColor.White;
-                            break;
-                    }
 
-                    Console.ForegroundColor = color;
+                        "black" => ConsoleColor.Black,
+                        "darkblue" => ConsoleColor.DarkBlue,
+                        "darkgreen" => ConsoleColor.DarkGreen,
+                        "darkcyan" => ConsoleColor.DarkCyan,
+                        "darkred" => ConsoleColor.DarkRed,
+                        "darkmagenta" => ConsoleColor.DarkMagenta,
+                        "darkyellow" => ConsoleColor.DarkYellow,
+                        "darkgray" => ConsoleColor.DarkGray,
+                        "darkgrey" => ConsoleColor.DarkGray,
+                        "gray" => ConsoleColor.Gray,
+                        "grey" => ConsoleColor.Gray,
+                        "green" => ConsoleColor.Green,
+                        "blue" => ConsoleColor.Blue,
+                        "yellow" => ConsoleColor.Yellow,
+                        "red" => ConsoleColor.Red,
+                        "magenta" => ConsoleColor.Magenta,
+                        "white" => ConsoleColor.White,
+                        _ => Console.ForegroundColor
+                    };
                     return ValueVariable.Default;
                 }),
 
@@ -108,31 +83,31 @@ namespace StandardLibrary
                 #region Math
 
                 new("math_abs", p =>
-                {
-                    if (p.Count < 1)
-                        return ValueVariable.Default;
-                    return new ValueVariable(Math.Abs(p[0].AsDouble()));
-                }),
+               {
+                   if (p.Count < 1)
+                       return ValueVariable.Default;
+                   return new ValueVariable(Math.Abs(p[0].AsDouble()));
+               }),
 
                 new("math_round", p =>
-                {
-                    if (p.Count < 1)
-                        return ValueVariable.Default;
-                    return new ValueVariable(Math.Round(p[0].AsDouble()));
-                }),
+               {
+                   if (p.Count < 1)
+                       return ValueVariable.Default;
+                   return new ValueVariable(Math.Round(p[0].AsDouble()));
+               }),
 
                 new("math_ceil", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    return new ValueVariable(Math.Ceiling(p[0].AsDouble())); 
+                    return new ValueVariable(Math.Ceiling(p[0].AsDouble()));
                 }),
 
                 new("math_floor", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    return new ValueVariable(Math.Floor(p[0].AsDouble())); 
+                    return new ValueVariable(Math.Floor(p[0].AsDouble()));
                 }),
 
                 new("math_pow", p =>
@@ -167,25 +142,25 @@ namespace StandardLibrary
                     return new ValueVariable(random.Next((int)p[0].AsDouble(), (int)p[1].AsDouble() + 1));
                 }),
 
-                new("math_sin", p => 
+                new("math_sin", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    return new ValueVariable(Math.Sin(p[0].AsDouble())); 
+                    return new ValueVariable(Math.Sin(p[0].AsDouble()));
                 }),
 
-                new("math_cos", p => 
+                new("math_cos", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    return new ValueVariable(Math.Cos(p[0].AsDouble())); 
+                    return new ValueVariable(Math.Cos(p[0].AsDouble()));
                 }),
 
-                new("math_tan", p => 
+                new("math_tan", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    return new ValueVariable(Math.Tan(p[0].AsDouble())); 
+                    return new ValueVariable(Math.Tan(p[0].AsDouble()));
                 }),
 
                 new("math_log", p =>
@@ -193,7 +168,7 @@ namespace StandardLibrary
                     if (p.Count < 1)
                         return ValueVariable.Default;
                     if (p.Count < 2)
-                        return new ValueVariable(Math.Log(p[0].AsDouble())); 
+                        return new ValueVariable(Math.Log(p[0].AsDouble()));
                     return new ValueVariable(Math.Log(p[0].AsDouble(), p[1].AsDouble()));
 
                 }),
@@ -201,6 +176,14 @@ namespace StandardLibrary
                 #endregion
 
                 #region Collection
+
+                new("col_create", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    IVariable[] output = Enumerable.Repeat((IVariable)ValueVariable.Default, (int)(p[0].AsDouble())).ToArray();
+                    return new CollectionVariable(output);
+                }),
 
                 new("col_add", p =>
                 {
@@ -262,12 +245,12 @@ namespace StandardLibrary
 
                 #region String
 
-                new("str_substr", p => 
+                new("str_substr", p =>
                 {
                     if (p.Count < 2)
                         return ValueVariable.Default;
                     if (p.Count < 3)
-                        return new ValueVariable(p[0].AsString()[(int)(p[1].AsDouble() - 1)..] );
+                        return new ValueVariable(p[0].AsString()[(int)(p[1].AsDouble() - 1)..]);
                     return new ValueVariable(p[0].AsString()[(int)(p[1].AsDouble() - 1)..(int)(p[2].AsDouble() - 1)]);
                 }),
 
@@ -326,13 +309,13 @@ namespace StandardLibrary
                     return new ValueVariable(p[0].AsString().ToLower());
                 }),
 
-                new("str_trim", p => 
+                new("str_trim", p =>
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
 
                     return new ValueVariable(p[0].AsString().Trim());
-                        
+
                 }),
 
                 #endregion
@@ -368,6 +351,144 @@ namespace StandardLibrary
                     Environment.Exit(0);
                     return ValueVariable.Default;
                 }),
+                #endregion
+
+                #region IO
+
+                new("cbb_loc", p => new ValueVariable(Environment.CurrentDirectory)),
+
+                new("path_comb", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    return new ValueVariable(Path.Combine(p.Select(p => p.AsString()).ToArray()));
+                }),
+
+                new("folder_exists", p =>
+                {
+                    if (p.Count < 1)
+                        return new ValueVariable(false);
+
+                    return new ValueVariable(Directory.Exists(p[0].AsString()));
+                }),
+
+                new("folder_files", p =>
+                {
+                    if (p.Count < 1)
+                        return new ValueVariable(false);
+
+                    string[] files = Directory.GetFiles(p[0].AsString());
+                    var filesAsVars = files.Select(p => new ValueVariable(p)).Cast<IVariable>();
+                    return new CollectionVariable(filesAsVars.ToArray());
+                }),
+
+                new("folder_delete", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    Directory.Delete(p[0].AsString(), true);
+
+                    return ValueVariable.Default;
+                }),
+
+                new("folder_create", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    Directory.CreateDirectory(p[0].AsString());
+
+                    return ValueVariable.Default;
+                }),
+
+                new("file_append", p =>
+                {
+                    if (p.Count < 2)
+                        return ValueVariable.Default;
+
+                    File.AppendAllText(p[0].AsString(), p[1].AsString());
+
+                    return ValueVariable.Default;
+                }),
+
+                new("file_write", p =>
+                {
+                    if (p.Count < 2)
+                        return ValueVariable.Default;
+
+                    File.WriteAllText(p[0].AsString(), p[1].AsString());
+
+                    return ValueVariable.Default;
+                }),
+
+                new("file_delete", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    File.Delete(p[0].AsString());
+
+                    return ValueVariable.Default;
+                }),
+
+                new("file_copy", p =>
+               {
+                   if (p.Count < 2)
+                       return ValueVariable.Default;
+
+                   File.Copy(p[0].AsString(), p[1].AsString());
+
+                   return ValueVariable.Default;
+               }),
+
+                new("file_exists", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    return new ValueVariable(File.Exists(p[0].AsString()));
+                }),
+
+                new("file_read", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    return new ValueVariable(File.ReadAllText(p[0].AsString()));
+                }),
+
+                new("file_read_lines", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    string[] lineStrings = File.ReadAllLines(p[0].AsString());
+                    try
+                    {
+                        File.ReadAllText(p[0].AsString());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    IVariable[] lines = new IVariable[lineStrings.Length];
+                    for (int i = 0; i < lineStrings.Length; i++)
+                        lines[i] = new ValueVariable(lineStrings[i]);
+
+                    return new CollectionVariable(lines);
+                }),
+                
+                new("file_folder", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    var location = Path.GetDirectoryName(p[0].AsString());
+
+                    return new ValueVariable(location);
+                })
+                
                 #endregion
             };
         }

@@ -1,0 +1,80 @@
+# constants
+global words : file_read_lines("words.txt");
+global correct_word : str_to_upper(words[math_rand(1,to_num(words))]);
+global num_guesses : 0;
+
+# disp_echo(correct_word); # uncomment the first '#' to show the correct word
+disp_color("green");
+disp_echo
+("
+██     ██  ██████  ██████  ██████  ██      ███████ 
+██     ██ ██    ██ ██   ██ ██   ██ ██      ██      
+██  █  ██ ██    ██ ██████  ██   ██ ██      █████   
+██ ███ ██ ██    ██ ██   ██ ██   ██ ██      ██      
+ ███ ███   ██████  ██   ██ ██████  ███████ ███████
+");
+disp_color("white");
+disp_echo("An example Cbb program by Heerod Sahraei");
+
+# executes the game, will return if the player got the 'correct_word' 
+game() : {
+	disp_echo("You have six chances to guess the five letter word.");
+
+	loop num_guesses < 6:
+	{
+		guess : disp_prompt();
+		
+		if str_to_upper(guess) != correct_word:
+			num_guesses : num_guesses + 1;
+		else:
+			return true;
+		if !guess_valid(guess):
+		{
+			disp_echo("Invalid word! Try again");
+			num_guesses : num_guesses - 1;
+		}
+		else:
+			compare(guess);
+	}
+	return false;
+}
+
+# prints out the comparison result of 'guess' to the console
+compare(guess): 
+{
+	guess : str_to_col(str_to_upper(guess));
+	answer : str_to_col(correct_word);
+	index  : 1;
+	repeat guess:
+	{
+		if(guess[index] = answer[index]):{
+			disp_color("green");
+			answer[index] : 0; # remove item from available letters to prevent repeats
+		}
+		else: if col_loc_of(answer,guess[index]) != 0: {
+			disp_color("yellow");
+			answer[col_loc_of(answer,guess[index])] = 0; # same here
+		}
+		else:
+			disp_color("darkgray");
+		disp_out(guess[index], " ");
+		index : index + 1;
+	}
+	disp_color("white");
+	disp_echo(answer);
+}
+guess_valid(guess):
+	return 0 != col_loc_of(words,guess);
+
+# start
+if game():
+	disp_echo("CONGRATULATIONS! YOU GUESSED THE WORD!");
+else:
+	disp_echo("Sorry, you ran out of guesses, the correct word was: ", correct_word);
+
+# cleanup
+dispose words;
+dispose correct_word;
+dispose num_guesses;
+
+disp_prompt();
