@@ -7,7 +7,7 @@ This is a programming language that was first intended to be esoteric, but ended
 I'll continue to update this so long as I am not bored and or dead. Soon, I will be creating documentation on this very Github page.
 Release 2.2.0 has now been released, please submit bug reports so I know why I'm dumb.
 
-Syntax and documentation can be found [in the wiki](/wiki)
+Syntax and documentation can be found [in the wiki](https://github.com/GitHababi/C-Double-Flat/wiki)
 
 *Copyleft Hababisoft Corporation, 2021. All rights unreserved.*\
 *You could copy this code, but why would you? This sucks.*
