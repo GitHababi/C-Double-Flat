@@ -5,20 +5,18 @@ namespace C_Double_Flat.Core.Parser
 {
     public partial class Parser
     {
-        private Parser(Token[] tokens, bool isNested)
+        private Parser(Token[] tokens)
         {
             this.Tokens = tokens;
-            this.IsNested = isNested;
             this.Index = 0;
         }
 
         private readonly Token[] Tokens;
         private Token CurrentToken => Peek(0);
-        private readonly bool IsNested;
         private int Index;
-        public static Statement Parse(Token[] tokens, bool isNested = false)
+        public static Statement Parse(Token[] tokens)
         {
-            return new Parser(tokens, isNested).Parse();
+            return new Parser(tokens).Parse();
         }
 
         private Statement Parse()

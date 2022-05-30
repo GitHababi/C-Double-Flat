@@ -1,4 +1,5 @@
 ﻿using C_Double_Flat.Core.Utilities;
+using C_Double_Flat.Core.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -194,7 +195,7 @@ namespace StandardLibrary
                         return p[0];
 
                     var collection = (CollectionVariable)p[0];
-                    collection.AddMember(p[1]);
+                    collection.Variables = collection.Variables.Concat(new IVariable[]{p[1]}).ToArray();
                     return collection;
                 }),
 
@@ -207,7 +208,14 @@ namespace StandardLibrary
                         return p[0];
 
                     var collection = (CollectionVariable)p[0];
-                    collection.RemoveMember(p[1]);
+
+                    for (int i = 0; i < collection.Variables.Length; i++)
+                        if (Interpreter.Equals(p[1], collection.Variables[i]).AsBool())
+                        {
+                            collection.Variables = collection.Variables.Take(i).Concat(collection.Variables.Skip(i + 1)).ToArray();
+                            break;
+                        }
+
                     return collection;
                 }),
 
@@ -219,8 +227,9 @@ namespace StandardLibrary
                     if (p[0].Type() != VariableType.Collection)
                         return p[0];
 
+                    var index = (int)p[1].AsDouble() - 1;
                     var collection = (CollectionVariable)p[0];
-                    collection.RemoveMemberAt((int)p[1].AsDouble());
+                    collection.Variables = collection.Variables.Take(index).Concat(collection.Variables.Skip(index + 1)).ToArray();
                     return collection;
                 }),
 
@@ -478,7 +487,7 @@ namespace StandardLibrary
 
                     return new CollectionVariable(lines);
                 }),
-                
+
                 new("file_folder", p =>
                 {
                     if (p.Count < 1)

@@ -36,7 +36,7 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL 2.2.0");
+                Console.WriteLine("C Double Flat - REPL 2.3.0");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
             }
@@ -90,36 +90,21 @@ namespace C_Double_Flat
             {
                 if (file.EndsWith(".dll"))
                 {
-                    var errors = AddFunctionsFromPath(file);
-                    if (errors != "")
+                    try
+                    {
+                        Interpreter.LoadLibrary(file);
+                    }
+                    catch (Exception e)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine($"An error occured while loading library '{Path.GetFileName(file)}':");
-                        Console.WriteLine(errors);
+                        Console.WriteLine(e.Message);
                         Console.ResetColor();
                     }
 
                 }
             }
         }
-        public static string AddFunctionsFromPath(string libraryPath)
-        {
-
-            try
-            {
-                var lib = Assembly.LoadFile(libraryPath);
-                var types = lib.GetTypes();
-                foreach (var type in types)
-                {
-                    if (typeof(ILoadable).IsAssignableFrom(type))
-                        Interpreter.SetFunction(((ILoadable)Activator.CreateInstance(type)).GetFunctions());
-                }
-            }
-            catch (Exception e)
-            {
-                return e.Message;
-            }
-            return "";
-        }
+        
     }
 }

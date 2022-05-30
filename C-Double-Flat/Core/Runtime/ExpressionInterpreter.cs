@@ -63,7 +63,10 @@ namespace C_Double_Flat.Core.Runtime
                 return variable;
             var collec = (CollectionVariable)variable;
 
-            return collec.AccessMember((int)InterpretExpression(node.Location).AsDouble());
+            var location = (int)InterpretExpression(node.Location).AsDouble() - 1;
+            if (location >= collec.Variables.Length)
+                return ValueVariable.Default;
+            return collec.Variables[location];
         }
         private IVariable InterpretFunctionCall(FunctionCallNode node)
         {
@@ -90,7 +93,7 @@ namespace C_Double_Flat.Core.Runtime
                 return function.Run(parameters);
             }
             catch
-            { 
+            {
                 /* oopsie */
                 return ValueVariable.Default;
             }
@@ -138,7 +141,6 @@ namespace C_Double_Flat.Core.Runtime
         }
         public static IVariable GreaterThan(IVariable left, IVariable right)
         {
-
             return new ValueVariable(left.AsDouble() > right.AsDouble());
         }
         public static IVariable LessThan(IVariable left, IVariable right)
@@ -150,167 +152,56 @@ namespace C_Double_Flat.Core.Runtime
         {
             if (left.Type() != right.Type())
                 return new ValueVariable(false);
-            if (left.Type() == VariableType.Collection)
+            if (left.Type() != VariableType.Collection)
+                return new ValueVariable(((ValueVariable)left).Value.Equals(((ValueVariable)right).Value));
+            if (((CollectionVariable)left).Variables.Length != ((CollectionVariable)right).Variables.Length)
+                return new ValueVariable(false);
+
+            for (int i = 0; i < ((CollectionVariable)left).Variables.Length; i++)
             {
-                if (((CollectionVariable)left).Variables.Length != ((CollectionVariable)right).Variables.Length)
+                if (!((ValueVariable)Equals(((CollectionVariable)left).Variables[i], ((CollectionVariable)right).Variables[i])).AsBool())
                     return new ValueVariable(false);
-
-                for (int i = 0; i < ((CollectionVariable)left).Variables.Length; i++)
-                {
-                    if (!((ValueVariable)Equals(((CollectionVariable)left).Variables[i], ((CollectionVariable)right).Variables[i])).AsBool())
-                        return new ValueVariable(false);
-                }
-                return new ValueVariable(true);
             }
-            return new ValueVariable(((ValueVariable)left).Value.Equals(((ValueVariable)right).Value));
-        }
+            return new ValueVariable(true);
 
-        #region Operations
-        #region Divide
+        }
         public static IVariable Divide(IVariable left, IVariable right)
         {
-            if (left.Type() == VariableType.Collection && right.Type() == VariableType.Collection)
-                return Divide((CollectionVariable)left, (CollectionVariable)right);
-            if (left.Type() == VariableType.Collection)
-                return Divide((CollectionVariable)left, (ValueVariable)right);
-            if (right.Type() == VariableType.Collection)
-                return Divide((ValueVariable)left, (CollectionVariable)right);
-            return Divide((ValueVariable)left, (ValueVariable)right);
-        }
-        private static IVariable Divide(CollectionVariable left, CollectionVariable right)
-        {
-            var output = new List<IVariable>();
-            for (int i = 0; i < Math.Min(left.Variables.Length, right.Variables.Length); i++)
-                output.Add(Divide(left.Variables[i], right.Variables[i]));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Divide(ValueVariable left, CollectionVariable right)
-        {
-            var output = new List<IVariable>();
-            foreach (var item in right.Variables)
-                output.Add(Divide(left, item));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Divide(CollectionVariable left, ValueVariable right)
-        {
-            var output = new List<IVariable>();
-            foreach (var item in left.Variables)
-                output.Add(Divide(item, right));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Divide(ValueVariable left, ValueVariable right)
-        {
-            if (right.AsDouble() == 0) return left;
+            if (left.Type() == VariableType.Collection || right.Type() == VariableType.Collection)
+                return ValueVariable.Default;
+            if (right.AsDouble() == 0)
+                return left;
             return new ValueVariable(left.AsDouble() / right.AsDouble());
         }
-        #endregion
-        #region Multiply
         private static IVariable Multiply(IVariable left, IVariable right)
         {
-            if (left.Type() == VariableType.Collection && right.Type() == VariableType.Collection)
-                return Multiply((CollectionVariable)left, (CollectionVariable)right);
-            if (left.Type() == VariableType.Collection)
-                return Multiply((CollectionVariable)left, (ValueVariable)right);
-            if (right.Type() == VariableType.Collection)
-                return Multiply((CollectionVariable)right, (ValueVariable)left);
-            return Multiply((ValueVariable)left, (ValueVariable)right);
-        }
-        private static IVariable Multiply(CollectionVariable left, CollectionVariable right)
-        {
-            var output = new List<IVariable>();
-            for (int i = 0; i < Math.Min(left.Variables.Length, right.Variables.Length); i++)
-                output.Add(Multiply(left.Variables[i], right.Variables[i]));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Multiply(CollectionVariable collection, ValueVariable factor)
-        {
-            var output = new List<IVariable>();
-            foreach (var item in collection.Variables)
-                output.Add(Multiply(item, factor));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Multiply(ValueVariable left, ValueVariable right)
-        {
+            if (left.Type() == VariableType.Collection || right.Type() == VariableType.Collection)
+                return ValueVariable.Default;
             return new ValueVariable(left.AsDouble() * right.AsDouble());
         }
-        #endregion
-        #region Subtraction
         public static IVariable Subtract(IVariable left, IVariable right)
         {
-            if (left.Type() == VariableType.Collection && right.Type() == VariableType.Collection)
-                return Subtract((CollectionVariable)left, (CollectionVariable)right);
-            if (left.Type() == VariableType.Collection)
-                return Subtract((CollectionVariable)left, (ValueVariable)right);
-            if (right.Type() == VariableType.Collection)
-                return Subtract((ValueVariable)left, (CollectionVariable)right);
-            return Subtract((ValueVariable)left, (ValueVariable)right);
-        }
-        private static IVariable Subtract(CollectionVariable left, CollectionVariable right)
-        {
-            var output = new List<IVariable>();
-            for (int i = 0; i < Math.Min(left.Variables.Length, right.Variables.Length); i++)
-                output.Add(Subtract(left.Variables[i], right.Variables[i]));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Subtract(ValueVariable left, CollectionVariable right)
-        {
-            var output = new List<IVariable>();
-            foreach (var item in right.Variables)
-                output.Add(Subtract(left, item));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Subtract(CollectionVariable left, ValueVariable right)
-        {
-            var output = new List<IVariable>();
-            foreach (var item in left.Variables)
-                output.Add(Subtract(item, right));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Subtract(ValueVariable left, ValueVariable right)
-        {
+            if (left.Type() == VariableType.Collection || right.Type() == VariableType.Collection)
+                return ValueVariable.Default;
             return new ValueVariable(left.AsDouble() - right.AsDouble());
         }
-        #endregion
-        #region Addition
         public static IVariable Add(IVariable left, IVariable right)
         {
-            if (left.Type() == VariableType.Collection && right.Type() == VariableType.Collection)
-                return Add((CollectionVariable)left, (CollectionVariable)right);
-            if (left.Type() == VariableType.Collection)
-                return Add((CollectionVariable)left, (ValueVariable)right);
-            if (right.Type() == VariableType.Collection)
-                return Add((CollectionVariable)right, (ValueVariable)left);
+            if (left.Type() == VariableType.Collection || right.Type() == VariableType.Collection)
+                return ValueVariable.Default;
             return Add((ValueVariable)left, (ValueVariable)right);
-        }
-
-        public static IVariable Add(CollectionVariable collection, ValueVariable addend)
-        {
-            var output = new List<IVariable>();
-            foreach (var item in collection.Variables)
-                output.Add(Add(item, addend));
-            return new CollectionVariable(output);
-        }
-        private static IVariable Add(CollectionVariable left, CollectionVariable right)
-        {
-            var output = new List<IVariable>(left.Variables);
-            output.AddRange(right.Variables);
-            return new CollectionVariable(output);
         }
         private static IVariable Add(ValueVariable left, ValueVariable right)
         {
             var x = ValueVariable.ResolveAddingTypes(left, right);
-            var op1 = x.Item1;
-            var op2 = x.Item2;
 
-            op1.Value.Data = op1.Value.Type switch
+            var value = x.Item1.Value.Type switch
             {
-                Utilities.ValueType.Number => (op1.AsDouble() + op2.AsDouble()).ToString(),
-                Utilities.ValueType.String => op1.AsString() + op2.AsString(),
+                Utilities.ValueType.Number => (x.Item1.AsDouble() + x.Item2.AsDouble()).ToString(),
+                Utilities.ValueType.String => x.Item1.AsString() + x.Item2.AsString(),
                 _ => throw new Exception($"ValueVariable has invalid type '{left.Value.Type}' while adding."),
             };
-            return op1;
+            return new ValueVariable(new Value(x.Item1.Value.Type, value));
         }
-        #endregion
-        #endregion
     }
 }

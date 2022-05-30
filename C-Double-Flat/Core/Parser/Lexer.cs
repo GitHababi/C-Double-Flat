@@ -144,6 +144,9 @@ namespace C_Double_Flat.Core.Parser
                 case '\'':
                     output = TokenizeString('\'');
                     break;
+                case '.':
+                    output = TokenizeNumber(1);
+                    break;
                 case '"':
                     output = TokenizeString('"');
                     break;
@@ -180,11 +183,10 @@ namespace C_Double_Flat.Core.Parser
         /// Returns a number token when fount in input, not to be called independently.
         /// </summary>
         /// <returns></returns>
-        private Token TokenizeNumber()
+        private Token TokenizeNumber(int dotCount = 0)
         {
             Token output = new(Position, TokenType.Number);
-            string accumulator = CurrentChar.ToString();
-            int dotCount = 0;
+            string accumulator = dotCount > 0 ? "0." : "" + CurrentChar.ToString();
 
             while (Peek() != default && (Char.IsDigit(Peek()) || Peek() == '.'))
             {

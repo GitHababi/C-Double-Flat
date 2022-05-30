@@ -3,6 +3,9 @@ using C_Double_Flat.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+
+
 namespace C_Double_Flat.Core.Runtime
 {
     public sealed partial class Interpreter
@@ -129,38 +132,55 @@ namespace C_Double_Flat.Core.Runtime
                 SetLocalVariable(key, value);
         }
 
+        public static void LoadLibrary(string libraryPath)
+        {
+
+            var lib = Assembly.LoadFile(libraryPath);
+            var types = lib.GetTypes();
+            foreach (var type in types)
+            {
+                if (typeof(ILoadable).IsAssignableFrom(type))
+                    Interpreter.SetFunction(((ILoadable)Activator.CreateInstance(type)).GetFunctions());
+            }
+        }
+
         private (IVariable, bool) Interpret(Statement statement)
         {
             Environment.CurrentDirectory = this.Dir; // ensure all execution happens where the interpreter is
-            switch (statement.Type)
+            try
             {
-                case StatementType.Dispose:
-                    InterpretDispose((DisposeStatement)statement);
-                    break;
-                case StatementType.Expression:
-                    InterpretExpression(((ExpressionStatement)statement).Expression);
-                    break;
-                case StatementType.Block:
-                    return InterpretBlock((StatementBlock)statement);
-                case StatementType.Return:
-                    return InterpretReturn((ReturnStatement)statement);
-                case StatementType.Assignment:
-                    InterpretAssignment((AssignmentStatement)statement);
-                    break;
-                case StatementType.Repeat:
-                    return InterpretRepeat((RepeatStatement)statement);
-                case StatementType.Loop:
-                    return InterpretLoop((LoopStatement)statement);
-                case StatementType.If:
-                    return InterpretIf((IfStatement)statement);
-                case StatementType.Run:
-                    return InterpretRun((RunStatement)statement);
-                case StatementType.Function:
-                    InterpretFunction((FunctionStatement)statement);
-                    break;
-                default:
-                    break;
+                switch (statement.Type)
+                {
+                    case StatementType.Dispose:
+                        InterpretDispose((DisposeStatement)statement);
+                        break;
+                    case StatementType.Expression:
+                        InterpretExpression(((ExpressionStatement)statement).Expression);
+                        break;
+                    case StatementType.Block:
+                        return InterpretBlock((StatementBlock)statement);
+                    case StatementType.Return:
+                        return InterpretReturn((ReturnStatement)statement);
+                    case StatementType.Assignment:
+                        InterpretAssignment((AssignmentStatement)statement);
+                        break;
+                    case StatementType.Repeat:
+                        return InterpretRepeat((RepeatStatement)statement);
+                    case StatementType.Loop:
+                        return InterpretLoop((LoopStatement)statement);
+                    case StatementType.If:
+                        return InterpretIf((IfStatement)statement);
+                    case StatementType.Run:
+                        return InterpretRun((RunStatement)statement);
+                    case StatementType.Function:
+                        InterpretFunction((FunctionStatement)statement);
+                        break;
+                    default:
+                        break;
+                }
+
             }
+            catch { /* Oopsie */ }
             Environment.CurrentDirectory = this.Dir;
             return (ValueVariable.Default, false);
         }
@@ -223,7 +243,7 @@ namespace C_Double_Flat.Core.Runtime
             {
                 if (path.EndsWith(".dll"))
                 {
-                    Program.AddFunctionsFromPath(path);
+                    LoadLibrary(path);
                     return (ValueVariable.Default, false);
                 }
                 var data = File.ReadAllText(path);
@@ -308,7 +328,7 @@ namespace C_Double_Flat.Core.Runtime
             else
             {
                 var collection = (CollectionVariable)current;
-                collection.SetMember(location, InterpretExpression(assignmentStatement.Assignment));
+                collection.Variables[location] = InterpretExpression(assignmentStatement.Assignment);
             }
 
         }

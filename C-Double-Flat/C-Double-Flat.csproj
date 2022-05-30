@@ -15,12 +15,20 @@
 		<PackageIconUrl />
 		<SignAssembly>false</SignAssembly>
 		<ErrorReport>prompt</ErrorReport>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<RepositoryUrl>https://github.com/GitHababi/C-Double-Flat</RepositoryUrl>
+		<AssemblyVersion></AssemblyVersion>
+		<AnalysisLevel>5.0</AnalysisLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <Optimize>False</Optimize>
+	  <Optimize>True</Optimize>
+	  <FileAlignment>1024</FileAlignment>
+	  <DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <Optimize>False</Optimize>
+	  <Optimize>True</Optimize>
+	  <FileAlignment>1024</FileAlignment>
+	  <DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="cbb_logo.ico" />
