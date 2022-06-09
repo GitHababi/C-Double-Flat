@@ -30,7 +30,7 @@ namespace C_Double_Flat.Core.Parser
                 output.Add(ParseStatement());
                 if (current.Equals(CurrentToken)) break;
             }
-            return new StatementBlock(output);
+            return output.Count == 1 ? output[0] : new StatementBlock(output);
         }
 
         private Token Peek(int amount = 1)

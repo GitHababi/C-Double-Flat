@@ -19,7 +19,9 @@
 
         public override string ToString()
         {
-            return $"({Type} : {Data})";
+            if (Type == ValueType.String)
+                return $"\"{Data}\"";
+            return $"{Data}";
         }
     }
 

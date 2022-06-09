@@ -13,7 +13,7 @@
 		<AssemblyName>C Double Flat</AssemblyName>
 		<PackageIcon>cbb_logo.png</PackageIcon>
 		<PackageIconUrl />
-		<SignAssembly>false</SignAssembly>
+		<SignAssembly>False</SignAssembly>
 		<ErrorReport>prompt</ErrorReport>
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 		<RepositoryUrl>https://github.com/GitHababi/C-Double-Flat</RepositoryUrl>
@@ -21,12 +21,12 @@
 		<AnalysisLevel>5.0</AnalysisLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <Optimize>True</Optimize>
+	  <Optimize>False</Optimize>
 	  <FileAlignment>1024</FileAlignment>
 	  <DebugType>embedded</DebugType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <Optimize>True</Optimize>
+	  <Optimize>False</Optimize>
 	  <FileAlignment>1024</FileAlignment>
 	  <DebugType>embedded</DebugType>
 	</PropertyGroup>

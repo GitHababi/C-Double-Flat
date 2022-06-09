@@ -23,7 +23,8 @@ namespace C_Double_Flat
 
                         var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
                         Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
+                        if (statements.Type == StatementType.Expression || output.Item2)
+                            Console.WriteLine(output.Item1.ToString());
                         Environment.Exit(0);
                     }
                     catch (Exception e)
@@ -36,7 +37,7 @@ namespace C_Double_Flat
             }
             else
             {
-                Console.WriteLine("C Double Flat - REPL 2.3.0");
+                Console.WriteLine("C Double Flat - REPL 2.4.0");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
             }
@@ -48,8 +49,8 @@ namespace C_Double_Flat
         {
             while (true)
             {
-                try
-                {
+               try
+               {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write(">");
                     Console.ResetColor();
@@ -59,21 +60,19 @@ namespace C_Double_Flat
                         tokens = Lexer.Tokenize(File.ReadAllText(input));
                     else
                         tokens = Lexer.Tokenize(input);
-                    // tokens.ToList().ForEach(x => Console.WriteLine(x));
                     var statements = Parser.Parse(tokens);
-                    // Console.WriteLine(statements);
                     var output = Interpreter.Interpret(statements, File.Exists(input) ? Path.GetDirectoryName(input) : Location);
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine(output.Item2 ? output.Item1.ToString() : "");
+                    if (statements.Type == StatementType.Expression || output.Item2)
+                        Console.WriteLine(output.Item1.ToString());
                     Console.ResetColor();
-                }
-                catch (Exception e)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Error.WriteLine(e.Message);
-                    // Console.Error.WriteLine(e.StackTrace);
-                    Console.ResetColor();
-                }
+               }
+               catch (Exception e)
+               {
+                   Console.ForegroundColor = ConsoleColor.Red;
+                   Console.Error.WriteLine(e.Message);
+                   Console.ResetColor();
+               }
 
             }
         }

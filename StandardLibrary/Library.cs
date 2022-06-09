@@ -182,7 +182,10 @@ namespace StandardLibrary
                 {
                     if (p.Count < 1)
                         return ValueVariable.Default;
-                    IVariable[] output = Enumerable.Repeat((IVariable)ValueVariable.Default, (int)(p[0].AsDouble())).ToArray();
+                    IVariable toFill = ValueVariable.Default;
+                    if (p.Count > 1)
+                        toFill = p[1];
+                    IVariable[] output = Enumerable.Repeat(toFill, (int)(p[0].AsDouble())).ToArray();
                     return new CollectionVariable(output);
                 }),
 
@@ -195,7 +198,7 @@ namespace StandardLibrary
                         return p[0];
 
                     var collection = (CollectionVariable)p[0];
-                    collection.Variables = collection.Variables.Concat(new IVariable[]{p[1]}).ToArray();
+                    collection.Variables.Add(p[1]);
                     return collection;
                 }),
 
@@ -209,12 +212,7 @@ namespace StandardLibrary
 
                     var collection = (CollectionVariable)p[0];
 
-                    for (int i = 0; i < collection.Variables.Length; i++)
-                        if (Interpreter.Equals(p[1], collection.Variables[i]).AsBool())
-                        {
-                            collection.Variables = collection.Variables.Take(i).Concat(collection.Variables.Skip(i + 1)).ToArray();
-                            break;
-                        }
+                    collection.Variables.Remove(p[1]);
 
                     return collection;
                 }),
@@ -229,7 +227,7 @@ namespace StandardLibrary
 
                     var index = (int)p[1].AsDouble() - 1;
                     var collection = (CollectionVariable)p[0];
-                    collection.Variables = collection.Variables.Take(index).Concat(collection.Variables.Skip(index + 1)).ToArray();
+                    collection.Variables.RemoveAt((int)(p[1].AsDouble() - 1));
                     return collection;
                 }),
 

@@ -147,16 +147,15 @@ namespace C_Double_Flat.Core.Runtime
         private (IVariable, bool) Interpret(Statement statement)
         {
             Environment.CurrentDirectory = this.Dir; // ensure all execution happens where the interpreter is
-            try
-            {
+           // try
+           // {
                 switch (statement.Type)
                 {
                     case StatementType.Dispose:
                         InterpretDispose((DisposeStatement)statement);
                         break;
                     case StatementType.Expression:
-                        InterpretExpression(((ExpressionStatement)statement).Expression);
-                        break;
+                        return (InterpretExpression(((ExpressionStatement)statement).Expression),false);
                     case StatementType.Block:
                         return InterpretBlock((StatementBlock)statement);
                     case StatementType.Return:
@@ -179,52 +178,32 @@ namespace C_Double_Flat.Core.Runtime
                         break;
                 }
 
-            }
-            catch { /* Oopsie */ }
+            //}
+            //catch { /* Oopsie */ }
             Environment.CurrentDirectory = this.Dir;
             return (ValueVariable.Default, false);
         }
         private void InterpretDispose(DisposeStatement statement)
         {
-            string name;
-            switch (statement.Disposer.Type)
-            {
-                case NodeType.AsName:
-                    name = GetAsNameIdentifier(statement.Disposer);
-                    break;
-                case NodeType.Literal:
-                    name = GetLiteralIdentifier(statement.Disposer);
-                    break;
-                case NodeType.FunctionCall:
-                    name = GetFunctionCallIdentifier(statement.Disposer);
-                    lock (_lock1) Functions.Remove(name);
-                    return;
-                default:
-                    return;
-            }
+            if (statement.Disposer.Type != NodeType.AsName &&
+                statement.Disposer.Type != NodeType.Literal &&
+                statement.Disposer.Type != NodeType.Variable)
+                return;
+            string name = GetIdentifier(statement.Disposer);
             lock (_lock)
             {
                 if (!GlobalVariables.Remove(name))
                     LocalVariables.Remove(name);
             }
-
         }
 
         private void InterpretFunction(FunctionStatement statement)
         {
             List<Token> args = new();
-            string name;
-            switch (statement.Identifier.Type)
-            {
-                case NodeType.AsName:
-                    name = GetAsNameIdentifier(statement.Identifier);
-                    break;
-                case NodeType.Literal:
-                    name = GetLiteralIdentifier(statement.Identifier);
-                    break;
-                default:
-                    return;
-            }
+            if (statement.Identifier.Type != NodeType.AsName &&
+                statement.Identifier.Type != NodeType.Literal)
+                return;
+            string name = GetIdentifier(statement.Identifier);
 
             foreach (ExpressionNode node in statement.ParameterNames)
             {
@@ -283,74 +262,74 @@ namespace C_Double_Flat.Core.Runtime
             }
             return (ValueVariable.Default, false);
         }
-        private void InterpretAssignment(AssignmentStatement assignmentStatement)
+        private void InterpretAssignment(AssignmentStatement statement)
         {
-            string assignment;
-            // Get the name of the variable to set.
-            switch (assignmentStatement.Identifier.Type)
+            if (statement.Identifier.Type == NodeType.CollectionCall)
             {
-                case NodeType.Literal:
-                    assignment = GetLiteralIdentifier(assignmentStatement.Identifier);
-                    break;
-                case NodeType.AsName:
-                    assignment = GetAsNameIdentifier(assignmentStatement.Identifier);
-                    break;
-                case NodeType.CollectionCall:
-                    // Collection Call setting (i.e. asd[1] : 1; ) is special and requires different method
-                    InterpretCollectionLocationAssignment(assignmentStatement);
-                    return;
-                default:
-                    return;
+                _ = InterpretCollectionLocationAssignment(statement.Identifier as CollectionCallNode, statement.Assignment, statement.Global, true);
+                // discard the return value as it's only used internally
+                return;
             }
-            SetVariable(assignmentStatement.Global, assignment, InterpretExpression(assignmentStatement.Assignment));
+            
+            if (statement.Identifier.Type != NodeType.AsName &&
+                statement.Identifier.Type != NodeType.Literal)
+                return;
+            string assignment = GetIdentifier(statement.Identifier);
+            
+            SetVariable(statement.Global, assignment, InterpretExpression(statement.Assignment));
         }
-        private void InterpretCollectionLocationAssignment(AssignmentStatement assignmentStatement)
+
+        /// <summary>
+        /// A helper method for assigning variables to collections, regardless of the number of dimensions.
+        /// </summary>
+        private IVariable InterpretCollectionLocationAssignment(CollectionCallNode assigner, ExpressionNode assignment, bool globality, bool topLevel = false)
         {
-            CollectionCallNode collectionCallNode = (CollectionCallNode)assignmentStatement.Identifier;
-
-            int location = Convert.ToInt32(InterpretExpression(collectionCallNode.Location).AsDouble());
-            string assignment;
-            switch (collectionCallNode.Caller.Type)
+            var location = Convert.ToInt32(InterpretExpression(assigner.Location).AsDouble()) - 1;
+            CollectionVariable variable;
+            if (assigner.Caller.Type != NodeType.CollectionCall)
             {
-                case NodeType.Literal:
-                    assignment = GetLiteralIdentifier(collectionCallNode.Caller);
-                    break;
-                case NodeType.AsName:
-                    assignment = GetAsNameIdentifier(collectionCallNode.Caller);
-                    break;
-                default:
-                    return;
+                var baseId = GetIdentifier(assigner.Caller);
+                var baseVariable = GetVariable(baseId);
+                if (baseVariable.Type() != VariableType.Collection)
+                {
+                    baseVariable = new CollectionVariable();
+                    SetVariable(globality, baseId, baseVariable);
+                }
+                variable = ((CollectionVariable)baseVariable).ExtendTo(location + 1);
             }
-
-            var current = GetVariable(assignment);
-            if (current.Type() != VariableType.Collection)
-                SetVariable(assignmentStatement.Global, assignment, new CollectionVariable(InterpretExpression(assignmentStatement.Assignment)));
             else
+                variable = ((CollectionVariable)InterpretCollectionLocationAssignment(assigner.Caller as CollectionCallNode, assignment, globality))
+                           .ExtendTo(location+1);
+            if (variable.Variables[location].Type() != VariableType.Collection && !topLevel)
+                variable.Variables[location] = new CollectionVariable();
+            if (topLevel)
+                variable.Variables[location] = InterpretExpression(assignment);
+            else
+                ((CollectionVariable)variable.Variables[location]).ExtendTo(location+1);
+            return variable.Variables[location];
+        }
+        private string GetIdentifier(ExpressionNode node)
+        {
+            if (node.Type == NodeType.Literal)
+                return ((LiteralNode)node).Value.Data;
+            if (node.Type == NodeType.AsName)
+                return InterpretExpression(((AsNameNode)node).Identifier).AsString();
+            if (node.Type == NodeType.FunctionCall)
             {
-                var collection = (CollectionVariable)current;
-                collection.Variables[location] = InterpretExpression(assignmentStatement.Assignment);
+                FunctionCallNode colnode = (FunctionCallNode)node;
+                return colnode.Caller.Type switch
+                {
+                    NodeType.Literal => GetIdentifier(colnode.Caller),
+                    NodeType.AsName => GetIdentifier(colnode.Caller),
+                    _ => ""
+                };
             }
-
-        }
-        private string GetFunctionCallIdentifier(ExpressionNode node)
-        {
-            FunctionCallNode colnode = (FunctionCallNode)node;
-            return colnode.Caller.Type switch
+            if (node.Type == NodeType.CollectionCall)
             {
-                NodeType.Literal => GetLiteralIdentifier(colnode.Caller),
-                NodeType.AsName => GetAsNameIdentifier(colnode.Caller),
-                _ => ""
-            };
-        }
-        private string GetAsNameIdentifier(ExpressionNode node)
-        {
-            AsNameNode asnnode = (AsNameNode)node;
-            return InterpretExpression(asnnode.Identifier).AsString();
-        }
-        private static string GetLiteralIdentifier(ExpressionNode node)
-        {
-            LiteralNode litnode = (LiteralNode)node;
-            return litnode.Value.Data;
+                CollectionCallNode colnode = (CollectionCallNode)node;
+                return GetIdentifier(colnode.Caller);
+            }
+            return "";
         }
         private (IVariable, bool) InterpretReturn(ReturnStatement returnStatement)
         {

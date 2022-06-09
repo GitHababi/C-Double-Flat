@@ -48,11 +48,11 @@ namespace C_Double_Flat.Core.Runtime
             switch (node.Caller.Type)
             {
                 case NodeType.AsName:
-                    name = GetAsNameIdentifier(node.Caller);
+                    name = GetIdentifier(node.Caller);
                     variable = GetVariable(name);
                     break;
                 case NodeType.Literal:
-                    name = GetLiteralIdentifier(node.Caller);
+                    name = GetIdentifier(node.Caller);
                     variable = GetVariable(name);
                     break;
                 default:
@@ -64,26 +64,17 @@ namespace C_Double_Flat.Core.Runtime
             var collec = (CollectionVariable)variable;
 
             var location = (int)InterpretExpression(node.Location).AsDouble() - 1;
-            if (location >= collec.Variables.Length)
+            if (location >= collec.Variables.Count)
                 return ValueVariable.Default;
             return collec.Variables[location];
         }
         private IVariable InterpretFunctionCall(FunctionCallNode node)
         {
-            string name = "";
+            if (node.Caller.Type != NodeType.AsName && node.Caller.Type != NodeType.Literal)
+                return ValueVariable.Default;
+         
             List<IVariable> parameters = new();
-            switch (node.Caller.Type)
-            {
-                case NodeType.AsName:
-                    name = GetAsNameIdentifier(node.Caller);
-                    break;
-                case NodeType.Literal:
-                    name = GetLiteralIdentifier(node.Caller);
-                    break;
-                default:
-                    return ValueVariable.Default;
-            }
-
+            var name = GetIdentifier(node.Caller);
             node.Parameters.ForEach(p => parameters.Add(InterpretExpression(p)));
 
             var function = GetFunction(name);
@@ -154,10 +145,10 @@ namespace C_Double_Flat.Core.Runtime
                 return new ValueVariable(false);
             if (left.Type() != VariableType.Collection)
                 return new ValueVariable(((ValueVariable)left).Value.Equals(((ValueVariable)right).Value));
-            if (((CollectionVariable)left).Variables.Length != ((CollectionVariable)right).Variables.Length)
+            if (((CollectionVariable)left).Variables.Count != ((CollectionVariable)right).Variables.Count)
                 return new ValueVariable(false);
 
-            for (int i = 0; i < ((CollectionVariable)left).Variables.Length; i++)
+            for (int i = 0; i < ((CollectionVariable)left).Variables.Count; i++)
             {
                 if (!((ValueVariable)Equals(((CollectionVariable)left).Variables[i], ((CollectionVariable)right).Variables[i])).AsBool())
                     return new ValueVariable(false);

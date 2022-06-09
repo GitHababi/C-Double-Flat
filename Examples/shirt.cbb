@@ -1,1 +1,0 @@
-square(x): return x * x; square(10)[1] : "asd"; disp_prompt();

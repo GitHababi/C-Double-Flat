@@ -6,7 +6,7 @@ namespace C_Double_Flat.Core.Parser
 {
     public partial class Parser
     {
-        private Statement ParseStatementBlock(bool scoped = false)
+        private Statement ParseStatementBlock()
         {
             List<Statement> output = new();
             ExpectThenNext(TokenType.LeftCurlyBracket);
@@ -14,7 +14,7 @@ namespace C_Double_Flat.Core.Parser
             while (CurrentToken.Type != TokenType.EndOfFile && CurrentToken.Type != TokenType.RightCurlyBracket)
             {
                 var current = CurrentToken;
-                output.Add(ParseStatement(scoped));
+                output.Add(ParseStatement());
                 if (current.Equals(CurrentToken)) break;
             }
             Next();
@@ -22,35 +22,22 @@ namespace C_Double_Flat.Core.Parser
             return new StatementBlock(output);
         }
 
-        private Statement ParseStatement(bool scoped = false)
+        private Statement ParseStatement()
         {
-            switch (CurrentToken.Type)
+            return CurrentToken.Type switch
             {
-                case TokenType.Global:
-                case TokenType.Local:
-                    return ParseVarAssignment();
-                case TokenType.Run:
-                    return ParseRunStatement();
-                case TokenType.LeftCurlyBracket:
-                    return ParseStatementBlock(scoped);
-                case TokenType.Return:
-                    return ParseReturnStatement();
-                case TokenType.Repeat:
-                    return ParseRepeatStatement(scoped);
-                case TokenType.Loop:
-                    return ParseLoopStatement(scoped);
-                case TokenType.If:
-                    return ParseIfStatement(scoped);
-                case TokenType.Else:
-                    return ParseLoneElseStatement(scoped);
-                case TokenType.Identifier:
-                case TokenType.AsName:
-                    return ParseAmbiguousDeclaration();
-                case TokenType.Dispose:
-                    return ParseDisposeStatement();
-                default:
-                    return ParseExpressionStatement();
-            }
+                TokenType.Global or TokenType.Local => ParseVarAssignment(),
+                TokenType.Run => ParseRunStatement(),
+                TokenType.LeftCurlyBracket => ParseStatementBlock(),
+                TokenType.Return => ParseReturnStatement(),
+                TokenType.Repeat => ParseRepeatStatement(),
+                TokenType.Loop => ParseLoopStatement(),
+                TokenType.If => ParseIfStatement(),
+                TokenType.Else => ParseLoneElseStatement(),
+                TokenType.Identifier or TokenType.AsName => ParseAmbiguousDeclaration(),
+                TokenType.Dispose => ParseDisposeStatement(),
+                _ => ParseExpressionStatement(),
+            };
         }
         private Statement ParseDisposeStatement()
         {
@@ -91,25 +78,25 @@ namespace C_Double_Flat.Core.Parser
         /// </summary>
         /// <param name="scoped"></param>
         /// <returns></returns>
-        private Statement ParseLoneElseStatement(bool scoped = false)
+        private Statement ParseLoneElseStatement()
         {
             ExpectThenNext(TokenType.Else);
             ExpectThenNext(TokenType.Assignment);
-            return ParseStatement(scoped);
+            return ParseStatement();
         }
 
-        private Statement ParseIfStatement(bool scoped = false)
+        private Statement ParseIfStatement()
         {
             var position = ExpectThenNext(TokenType.If).Position;
             var condition = ParseBinaryExpression();
             ExpectThenNext(TokenType.Assignment);
-            var ifStatement = ParseStatement(scoped);
+            var ifStatement = ParseStatement();
             Statement elseStatement = new StatementBlock(new List<Statement>());
             if (CurrentToken.Type == TokenType.Else)
             {
                 Next();
                 ExpectThenNext(TokenType.Assignment);
-                elseStatement = ParseStatement(scoped);
+                elseStatement = ParseStatement();
             }
 
             return new IfStatement(position, ifStatement, elseStatement, condition);
@@ -117,23 +104,23 @@ namespace C_Double_Flat.Core.Parser
         }
 
 
-        private Statement ParseLoopStatement(bool scoped = false)
+        private Statement ParseLoopStatement()
         {
             var position = ExpectThenNext(TokenType.Loop).Position;
             var condition = ParseBinaryExpression();
             ExpectThenNext(TokenType.Assignment);
-            var statement = ParseStatement(scoped);
+            var statement = ParseStatement();
 
             return new LoopStatement(position, statement, condition);
 
         }
 
-        private Statement ParseRepeatStatement(bool scoped = false)
+        private Statement ParseRepeatStatement()
         {
             var position = ExpectThenNext(TokenType.Repeat).Position;
             var amount = ParseBinaryExpression();
             ExpectThenNext(TokenType.Assignment);
-            var statement = ParseStatement(scoped);
+            var statement = ParseStatement();
 
             return new RepeatStatement(position, statement, amount);
 

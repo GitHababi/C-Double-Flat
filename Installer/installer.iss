@@ -1,5 +1,5 @@
 #define MyAppName "C Double Flat"
-#define MyAppVersion "2.3"
+#define MyAppVersion "2.4.0"
 #define MyAppPublisher "Hababisoft Corporation"
 #define MyAppURL "https://githababi.github.io/"
 #define MyAppExeName "cbb.exe"
@@ -26,7 +26,7 @@ LicenseFile=..\LICENSE
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=..\Installer
-OutputBaseFilename=cbb-2.3.0-installer
+OutputBaseFilename=cbb-{#MyAppVersion}-installer
 SetupIconFile=..\Assets\cbb_logo.ico
 Compression=lzma
 SolidCompression=yes                
