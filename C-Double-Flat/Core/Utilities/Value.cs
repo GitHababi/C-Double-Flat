@@ -2,8 +2,8 @@
 {
     public struct Value
     {
-        public ValueType Type;
-        public string Data;
+        public ValueType Type { get; init; }
+        public string Data { get; init; }
 
         public Value(LiteralNode node)
         {

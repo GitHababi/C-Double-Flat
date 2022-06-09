@@ -11,8 +11,7 @@ namespace C_Double_Flat.Core.Utilities
 
         public ValueVariable(ValueVariable variable)
         {
-            Value.Data = variable.Value.Data;
-            Value.Type = variable.Value.Type;
+            Value = variable.Value;
         }
 
         public ValueVariable(bool value)
