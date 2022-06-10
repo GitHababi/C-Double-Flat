@@ -22,7 +22,7 @@ namespace C_Double_Flat.App
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
                 REPL();
             }
-            
+
             try
             {
                 var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(args[0])));
@@ -45,8 +45,8 @@ namespace C_Double_Flat.App
         {
             while (true)
             {
-                //try
-                //{
+                try
+                {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write(">> ");
                     Console.ResetColor();
@@ -62,14 +62,13 @@ namespace C_Double_Flat.App
                     if (statements.Type == StatementType.Expression || output.Item2)
                         Console.WriteLine(output.Item1.ToString());
                     Console.ResetColor();
-                //}
-                //catch (Exception e)
-                //{
-                //    Console.ForegroundColor = ConsoleColor.Red;
-                //    Console.Error.WriteLine(e.Message);
-                //    Console.ResetColor();
-                //}
-
+                }
+                catch (Exception e)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Error.WriteLine(e.Message);
+                    Console.ResetColor();
+                }
             }
         }
 
