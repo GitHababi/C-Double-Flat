@@ -1,5 +1,5 @@
 #define MyAppName "C Double Flat"
-#define MyAppVersion "2.4.0"
+#define MyAppVersion "2.4.5"
 #define MyAppPublisher "Hababisoft Corporation"
 #define MyAppURL "https://githababi.github.io/"
 #define MyAppExeName "cbb.exe"
