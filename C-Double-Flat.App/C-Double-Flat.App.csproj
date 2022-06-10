@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>C_Double_Flat.App</RootNamespace>
+    <AssemblyName>C Double Flat Application</AssemblyName>
+    <ApplicationIcon>cbb_logo.ico</ApplicationIcon>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <Authors>Heerod Sahraei</Authors>
+    <PackageIcon>cbb_logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/GitHababi/C-Double-Flat</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="cbb_logo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Assets\cbb_logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\C-Double-Flat\C-Double-Flat.csproj" />
+    <ProjectReference Include="..\StandardLibrary\C-Double-Flat.StandardLibrary.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -132,7 +132,7 @@ namespace C_Double_Flat.Core.Runtime
                 SetLocalVariable(key, value);
         }
 
-        public static void LoadLibrary(string libraryPath)
+        public static void LoadLibraryFromPath(string libraryPath)
         {
 
             var lib = Assembly.LoadFile(libraryPath);
@@ -144,11 +144,17 @@ namespace C_Double_Flat.Core.Runtime
             }
         }
 
+        public static void LoadLibrary(ILoadable library)
+        {
+            Interpreter.SetFunction(library.GetFunctions());
+        }
+
+
         private (IVariable, bool) Interpret(Statement statement)
         {
             Environment.CurrentDirectory = this.Dir; // ensure all execution happens where the interpreter is
-           // try
-           // {
+           try
+           {
                 switch (statement.Type)
                 {
                     case StatementType.Dispose:
@@ -178,8 +184,8 @@ namespace C_Double_Flat.Core.Runtime
                         break;
                 }
 
-            //}
-            //catch { /* Oopsie */ }
+            }
+            catch { /* Oopsie */ }
             Environment.CurrentDirectory = this.Dir;
             return (ValueVariable.Default, false);
         }
@@ -222,7 +228,7 @@ namespace C_Double_Flat.Core.Runtime
             {
                 if (path.EndsWith(".dll"))
                 {
-                    LoadLibrary(path);
+                    LoadLibraryFromPath(path);
                     return (ValueVariable.Default, false);
                 }
                 var data = File.ReadAllText(path);
@@ -300,6 +306,8 @@ namespace C_Double_Flat.Core.Runtime
             else
                 variable = ((CollectionVariable)InterpretCollectionLocationAssignment(assigner.Caller as CollectionCallNode, assignment, globality))
                            .ExtendTo(location+1);
+            if (location < 1)
+                variable.ExtendTo(1); 
             if (variable.Variables[location].Type() != VariableType.Collection && !topLevel)
                 variable.Variables[location] = new CollectionVariable();
             if (topLevel)

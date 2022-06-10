@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-namespace StandardLibrary
+namespace C_Double_Flat.StandardLibrary
 {
     public class Library : ILoadable
     {

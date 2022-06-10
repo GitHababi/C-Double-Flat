@@ -1,58 +1,54 @@
-﻿using C_Double_Flat.Core.Parser;
-using C_Double_Flat.Core.Runtime;
-using C_Double_Flat.Core.Utilities;
-using System;
+﻿using System;
 using System.IO;
-using System.Reflection;
-namespace C_Double_Flat
+using C_Double_Flat.Core.Parser;
+using C_Double_Flat.Core.Utilities;
+using C_Double_Flat.Core.Runtime;
+using C_Double_Flat.StandardLibrary;
+namespace C_Double_Flat.App
 {
-    public class Program
+    internal class Program
     {
         public static readonly string Location = AppDomain.CurrentDomain.BaseDirectory;
         public static void Main(string[] args)
         {
+            Interpreter.LoadLibrary(new Library());
             LoadLibraries();
             Console.Title = "C Double Flat";
-            if (args.Length > 0)
+            if (args.Length == 0 || !File.Exists(args[0]))
             {
-                if (File.Exists(args[0]))
-                {
-                    try
-                    {
-                        var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(args[0])));
-
-                        var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
-                        if (statements.Type == StatementType.Expression || output.Item2)
-                            Console.WriteLine(output.Item1.ToString());
-                        Environment.Exit(0);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Error.WriteLine(e.Message);
-                        Console.ResetColor();
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("C Double Flat - REPL 2.4.0");
+                // TODO: Localization! (Cause why not)
+                Console.WriteLine("C Double Flat - REPL 2.4.5");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
+                REPL();
             }
+            
+            try
+            {
+                var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(args[0])));
 
-            REPL();
+                var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                if (statements.Type == StatementType.Expression || output.Item2)
+                    Console.WriteLine(output.Item1.ToString());
+                Environment.Exit(0);
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine(e.Message);
+                Console.ResetColor();
+            }
         }
 
         private static void REPL()
         {
             while (true)
             {
-               try
-               {
+                //try
+                //{
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(">");
+                    Console.Write(">> ");
                     Console.ResetColor();
                     string input = Console.ReadLine();
                     Token[] tokens;
@@ -66,13 +62,13 @@ namespace C_Double_Flat
                     if (statements.Type == StatementType.Expression || output.Item2)
                         Console.WriteLine(output.Item1.ToString());
                     Console.ResetColor();
-               }
-               catch (Exception e)
-               {
-                   Console.ForegroundColor = ConsoleColor.Red;
-                   Console.Error.WriteLine(e.Message);
-                   Console.ResetColor();
-               }
+                //}
+                //catch (Exception e)
+                //{
+                //    Console.ForegroundColor = ConsoleColor.Red;
+                //    Console.Error.WriteLine(e.Message);
+                //    Console.ResetColor();
+                //}
 
             }
         }
@@ -91,7 +87,7 @@ namespace C_Double_Flat
                 {
                     try
                     {
-                        Interpreter.LoadLibrary(file);
+                        Interpreter.LoadLibraryFromPath(file);
                     }
                     catch (Exception e)
                     {
@@ -104,6 +100,5 @@ namespace C_Double_Flat
                 }
             }
         }
-        
     }
 }

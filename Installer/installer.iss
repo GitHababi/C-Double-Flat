@@ -39,14 +39,17 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\C Double Flat.exe"; DestName: "cbb.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\lib\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\lib\StandardLibrary.dll*"; DestDir: "{app}\lib"; Flags: ignoreversion
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\clrcompression.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\clrjit.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\coreclr.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\mscordaccore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\C-Double-Flat\bin\Release\net5.0\publish\aspnetcorev2_inprocess.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\C-Double-Flat.App\bin\Release\net5.0\publish\C Double Flat Application.exe"; DestName: "cbb.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; These lines are no longer needed as of v2.4.5
+; Source: "..\C-Double-Flat\bin\Release\net5.0\publish\lib\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Source: "..\C-Double-Flat\bin\Release\net5.0\publish\lib\StandardLibrary.dll*"; DestDir: "{app}\lib"; Flags: ignoreversion
+; Source: "..\C-Double-Flat.App\bin\Release\net5.0\publish\aspnetcorev2_inprocess.dll"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "..\C-Double-Flat.App\bin\Release\net5.0\publish\clrcompression.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\C-Double-Flat.App\bin\Release\net5.0\publish\clrjit.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\C-Double-Flat.App\bin\Release\net5.0\publish\coreclr.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\C-Double-Flat.App\bin\Release\net5.0\publish\mscordaccore.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
