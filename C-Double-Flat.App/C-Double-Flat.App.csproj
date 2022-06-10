@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\C-Double-Flat\C-Double-Flat.csproj" />
-    <ProjectReference Include="..\StandardLibrary\C-Double-Flat.StandardLibrary.csproj" />
+    <ProjectReference Include="..\C-Double-Flat.StandardLibrary\C-Double-Flat.StandardLibrary.csproj" />
   </ItemGroup>
 
 </Project>
