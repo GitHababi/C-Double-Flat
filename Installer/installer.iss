@@ -38,6 +38,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
+
+[Dirs]
+Name: {app}\lib
 [Files]
 Source: "..\C-Double-Flat.App\bin\Release\net5.0\publish\C Double Flat Application.exe"; DestName: "cbb.exe"; DestDir: "{app}"; Flags: ignoreversion
 
