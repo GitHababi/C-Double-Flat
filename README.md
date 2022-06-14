@@ -1,11 +1,11 @@
 # C Double-Flat
-*My most monstrous creation yet.*
 <p align="center">
+  <i>My most monstrous creation yet.</i> <br>
   <img src="https://raw.githubusercontent.com/GitHababi/C-Double-Flat/main/assets/cbb_logo.png" alt="C-Double Flat" width="300"/>
 </p>
+
 This is a programming language that was first intended to be esoteric, but ended up actually usable (a bit).
-I'll continue to update this so long as I am not bored and or dead. Soon, I will be creating documentation on this very Github page.
-Release 2.1.0 has been released, please submit bug reports so I know why I'm dumb.
+I'll continue to update this so long as I am not bored and or dead. Go to the [Releases](https://github.com/GitHababi/C-Double-Flat/releases) tab to download the latest .exe installer for end users. Use the `cbb` command in command prompt or PowerShell as a shortcut. Check out the [Wiki](https://github.com/GitHababi/C-Double-Flat/wiki) for more info on C Double Flat and its inner workings.
 
 ## Project Structure
 - `C-Double-Flat` contains all the core project files that are necessary for cbb to run. Import this as a dependency when trying to make custom libraries.
