@@ -90,12 +90,7 @@ namespace C_Double_Flat.Core.Parser
                     output = new(Position, TokenType.SemiColon);
                     break;
                 case '<':
-                    if (Peek() == '-')
-                    {
-                        output = new(Position, TokenType.Insertion);
-                        Advance();
-                    }
-                    else if (Peek() == '=')
+                    if (Peek() == '=')
                     {
                         output = new(Position, TokenType.LessThanOrEqual);
                         Advance();

@@ -16,8 +16,8 @@ Release 2.1.0 has been released, please submit bug reports so I know why I'm dum
 
 - `C-Double-Flat.App` is the project where the actual cbb application that runs is generated. Depends on the other two projects.
 - `C-Double-Flat.StandardLibrary` is the standard library of functions that are usable in default running of the `C-Double-Flat.App` program.
+- `C-Double-Flat.Graphics` is a library that utilizes raylib and parts of code from [Raylib-cs](https://github.com/ChrisDill/Raylib-cs) to bring fully functional 2D graphics to cbb.
 
-
-*Copyleft Hababisoft Corporation, 2021. All rights reserved.*\
+*Copyleft Hababisoft Corporation, 2022. All rights unreserved.*\
 *You could copy this code, but why would you? This sucks.*
 

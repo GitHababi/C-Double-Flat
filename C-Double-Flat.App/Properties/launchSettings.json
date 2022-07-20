@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "No Startup Script": {
+      "commandName": "Project"
+    },
+    "Graphics Script": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\heero\\Desktop\\test.cbb\"",
+      "workingDirectory": "C:\\Users\\heero\\Desktop"
+    }
+  }
+}

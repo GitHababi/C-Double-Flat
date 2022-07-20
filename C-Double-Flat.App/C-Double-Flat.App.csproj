@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\C-Double-Flat.Graphics\C-Double-Flat.Graphics.csproj" />
     <ProjectReference Include="..\C-Double-Flat\C-Double-Flat.csproj" />
     <ProjectReference Include="..\C-Double-Flat.StandardLibrary\C-Double-Flat.StandardLibrary.csproj" />
   </ItemGroup>

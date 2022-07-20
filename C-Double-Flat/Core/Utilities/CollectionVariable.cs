@@ -39,6 +39,15 @@ namespace C_Double_Flat.Core.Utilities
             return this;
         }
 
+        public IVariable TryGetVariable(int index)
+        {
+            if (index < Variables.Count)
+            {
+                return Variables[index];
+            }
+            return ValueVariable.Default;
+        }
+
         public double AsDouble()
         {
             return this.Variables.Count;

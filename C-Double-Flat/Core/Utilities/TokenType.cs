@@ -15,7 +15,6 @@
 
         Comma,
         Assignment,
-        Insertion,
         SemiColon,
 
         LessThan,

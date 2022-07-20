@@ -4,6 +4,9 @@ using C_Double_Flat.Core.Parser;
 using C_Double_Flat.Core.Utilities;
 using C_Double_Flat.Core.Runtime;
 using C_Double_Flat.StandardLibrary;
+#if DEBUG
+using C_Double_Flat.Graphics;
+#endif
 namespace C_Double_Flat.App
 {
     internal class Program
@@ -12,12 +15,15 @@ namespace C_Double_Flat.App
         public static void Main(string[] args)
         {
             Interpreter.LoadLibrary(new Library());
+#if DEBUG
+            Interpreter.LoadLibrary(new Graphics.Graphics());
+#endif
             LoadLibraries();
             Console.Title = "C Double Flat";
             if (args.Length == 0 || !File.Exists(args[0]))
             {
                 // TODO: Localization! (Cause why not)
-                Console.WriteLine("C Double Flat - REPL 2.4.5");
+                Console.WriteLine("C Double Flat - REPL 2.5.0-alpha");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
                 REPL();

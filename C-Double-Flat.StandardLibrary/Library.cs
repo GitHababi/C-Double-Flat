@@ -4,15 +4,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace C_Double_Flat.StandardLibrary
 {
     public class Library : ILoadable
     {
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         public List<CustomFunction> GetFunctions()
         {
             return new()
             {
+                new("disp_visible", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    var hWnd = GetConsoleWindow();
+                    ShowWindow(hWnd, p[0].AsBool() ? 1 : 0);
+                    return ValueVariable.Default;
+                }),
+                
                 new("disp_out", p =>
                 {
                     p.ForEach(i => Console.Write(i.AsString()));
@@ -356,6 +372,14 @@ namespace C_Double_Flat.StandardLibrary
                 new("exit", p =>
                 {
                     Environment.Exit(0);
+                    return ValueVariable.Default;
+                }),
+                
+                new("wait", p=>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    Thread.Sleep((int)p[0].AsDouble());
                     return ValueVariable.Default;
                 }),
                 #endregion
