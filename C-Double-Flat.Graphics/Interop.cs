@@ -15,14 +15,14 @@ namespace C_Double_Flat.Graphics
     unsafe internal class Interop
     {
 
-        
-
         // Window Stuff (In no particular order)
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         internal static extern void InitWindow(int width, int height, string title);
+        
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SetWindowSize(int width, int height);
+        
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void CloseWindow();
         
