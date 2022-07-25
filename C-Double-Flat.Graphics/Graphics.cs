@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.IO;
 using System.Numerics;
+using C_Double_Flat.Graphics.Structs;
 namespace C_Double_Flat.Graphics
 {
     public class Graphics : ILoadable
@@ -11,6 +12,8 @@ namespace C_Double_Flat.Graphics
         internal static readonly string CurrentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         internal static readonly string RaylibPath = Path.Combine(CurrentDir, "./raylib.dll");
 
+        internal static Dictionary<int, Image> Images;
+        
         public List<CustomFunction> GetFunctions()
         {
             C_Double_Flat.Core.Runtime.Interpreter.GetFunction("disp_echo").Run(new() { new ValueVariable("Loading CBB Raylib Graphics") });
@@ -93,6 +96,7 @@ namespace C_Double_Flat.Graphics
                   Interop.ClearBackground(args.Count < 1 ? Color.Blank : args[0].AsColor());
                   return ValueVariable.Default;
                 }),
+                
                 // Sets pixel at vector (list of 2 numbers) to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
                 new ("graphics_draw_pixel", args =>
                 {
@@ -113,7 +117,7 @@ namespace C_Double_Flat.Graphics
                         Interop.DrawLineEx(args[0].AsVector2(), args[1].AsVector2(), (float)args[2].AsDouble(), args[3].AsColor());
                     return ValueVariable.Default;
                 }),
-                // Draws filled rectange from vector (list of 2 numbers), width, height, to a color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
+                // Draws filled rectangle from vector (list of 2 numbers), width, height, to a color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
                 new ("graphics_fill_rect", args =>
                 {
                     if (args.Count < 3)
@@ -121,6 +125,15 @@ namespace C_Double_Flat.Graphics
                     var location = args[0].AsVector2();
                     Interop.DrawRectangle((int)location.X, (int)location.Y, (int)args[1].AsDouble(), (int)args[2].AsDouble(), args[3].AsColor());
                     return ValueVariable.Default;
+                }),
+                // Draws outline of rectangle from vector (list of 2 numbers), width, height, to a color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
+                new("graphics_outline_rect", args => 
+                {
+                    if (args.Count < 3)
+                        return ValueVariable.Default;
+                    var location = args[0].AsVector2();
+                    Interop.DrawRectangleLines((int)location.X, (int)location.Y, (int)args[1].AsDouble(), (int)args[2].AsDouble(), args[3].AsColor());
+                    return ValueVariable.Default;                    
                 }),
                 // Draws filled ellipse from center vector (list of 2 numbers) size of horizontal axis, then vertical, to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
                 new ("graphics_fill_ellipse", args => 
@@ -132,6 +145,33 @@ namespace C_Double_Flat.Graphics
                     Interop.DrawEllipse((int)location.X, (int)location.Y, (float)args[1].AsDouble(), (float)args[2].AsDouble(), args[3].AsColor());
                     return ValueVariable.Default;
                 }),
+                // Draws outline of ellipse from center vector (list of 2 numbers) size of horizontal axis, then vertical, to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
+                new ("graphics_outline_ellipse", args =>
+                {
+                    if (args.Count < 4)
+                        return ValueVariable.Default;
+                    var location = args[0].AsVector2();
+
+                    Interop.DrawEllipse((int)location.X, (int)location.Y, (float)args[1].AsDouble(), (float)args[2].AsDouble(), args[3].AsColor());
+                    return ValueVariable.Default;
+                }),
+                // Draws fills a polygon from center vector (list of 2 numbers) number of sides, radius, and initial rotation, to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
+                new("graphics_fill_polygon", args =>
+                {
+                   if (args.Count < 5)
+                        return ValueVariable.Default;
+                   Interop.DrawPoly(args[0].AsVector2(), (int)args[1].AsDouble(),(int)args[2].AsDouble(),(int)args[3].AsDouble(),args[4].AsColor());
+                   return ValueVariable.Default; 
+                }),
+                // Draws fills a polygon from center vector (list of 2 numbers) number of sides, radius, initial rotation, line thickness, to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
+                new("graphics_outline_polygon", args =>
+                {
+                   if (args.Count < 6)
+                        return ValueVariable.Default;
+                   Interop.DrawPolyLinesEx(args[0].AsVector2(), (int)args[1].AsDouble(),(int)args[2].AsDouble(),(float)args[3].AsDouble(),(float)args[4].AsDouble(),args[5].AsColor());
+                   return ValueVariable.Default;
+                }),
+                
                 // Gets clipboard contents
                 new ("clipboard_get", args => {
                     return new ValueVariable(Interop.GetClipboardText());

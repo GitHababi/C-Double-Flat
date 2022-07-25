@@ -64,11 +64,27 @@ namespace C_Double_Flat.Graphics
         public static extern void DrawRectangle(int posX, int posY, int width, int height, Color color);
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawRectangleLines(int posX, int posY, int width, int height, Color color);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DrawEllipse(int centerX, int centerY, float radiusH, float radiusV, Color color);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawEllipseLines(int centerX, int centerY, float radiusH, float radiusV, Color color);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawPoly(Vector2 center, int sides, float radius, float rotation, Color color);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawPolyLinesEx(Vector2 center, int sides, float radius, float rotation, float lineThick, Color color);
+
+        // Mouse
+        
+            
         
         // Misc.
 
-        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern string GetClipboardText();
         
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]

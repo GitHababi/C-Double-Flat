@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Code Shamelessly Stolen from Raylib-cs
+ * https://github.com/ChrisDill/Raylib-cs
+ * All credit goes to them.
+ */
+
+using System;
 using System.Runtime.InteropServices;
 namespace C_Double_Flat.Graphics
 {
