@@ -12,11 +12,11 @@ namespace C_Double_Flat.Graphics
         internal static readonly string CurrentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         internal static readonly string RaylibPath = Path.Combine(CurrentDir, "./raylib.dll");
 
-        internal static Dictionary<int, Image> Images;
-        
+        internal static Dictionary<Guid, Texture2D> Textures = new();
+        internal static Dictionary<Guid, Font> Fonts = new();
+
         public List<CustomFunction> GetFunctions()
         {
-            C_Double_Flat.Core.Runtime.Interpreter.GetFunction("disp_echo").Run(new() { new ValueVariable("Loading CBB Raylib Graphics") });
             return new()
             {
                 // Gets readyness of graphics lib
@@ -40,6 +40,7 @@ namespace C_Double_Flat.Graphics
                     var height = args.Count < 2 ? 100 : Convert.ToInt32(args[1].AsDouble());
                     var title = args.Count < 3 ? "" : args[2].AsString();
 
+                    Interop.SetTraceLogLevel(TraceLogLevel.LOG_NONE);
                     Interop.InitWindow(width,height,title);
                     return ValueVariable.Default;
                 }),
@@ -49,6 +50,12 @@ namespace C_Double_Flat.Graphics
                     var width = args.Count < 1 ? 100 : Convert.ToInt32(args[0].AsDouble());
                     var height = args.Count < 2 ? 100 : Convert.ToInt32(args[1].AsDouble());
                     Interop.SetWindowSize(width,height);
+                    return ValueVariable.Default;
+                }),
+                new("graphics_set_title", args =>
+                {
+                    var title = args.Count < 1 ? "" : args[0].AsString();
+                    Interop.SetWindowTitle(title);
                     return ValueVariable.Default;
                 }),
                 // Closes window
@@ -96,7 +103,22 @@ namespace C_Double_Flat.Graphics
                   Interop.ClearBackground(args.Count < 1 ? Color.Blank : args[0].AsColor());
                   return ValueVariable.Default;
                 }),
-                
+                // Toggles flag described. MUST BE CALLED BEFORE graphics_init()
+                new("graphics_set_flag", args =>
+                {
+                    if (args.Count < 1)
+                        return ValueVariable.Default;
+                    Interop.SetConfigFlags(args[0].AsString().AsConfigFlag());
+                    return ValueVariable.Default;
+                }),
+                // Returns true if flag described is set.
+                new("graphics_get_flag", args =>
+                {
+                    if (args.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Interop.IsWindowState(args[0].AsString().AsConfigFlag()).AsBool());
+                }),
+
                 // Sets pixel at vector (list of 2 numbers) to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
                 new ("graphics_draw_pixel", args =>
                 {
@@ -127,16 +149,16 @@ namespace C_Double_Flat.Graphics
                     return ValueVariable.Default;
                 }),
                 // Draws outline of rectangle from vector (list of 2 numbers), width, height, to a color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
-                new("graphics_outline_rect", args => 
+                new("graphics_outline_rect", args =>
                 {
                     if (args.Count < 3)
                         return ValueVariable.Default;
                     var location = args[0].AsVector2();
                     Interop.DrawRectangleLines((int)location.X, (int)location.Y, (int)args[1].AsDouble(), (int)args[2].AsDouble(), args[3].AsColor());
-                    return ValueVariable.Default;                    
+                    return ValueVariable.Default;
                 }),
                 // Draws filled ellipse from center vector (list of 2 numbers) size of horizontal axis, then vertical, to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
-                new ("graphics_fill_ellipse", args => 
+                new ("graphics_fill_ellipse", args =>
                 {
                     if (args.Count < 4)
                         return ValueVariable.Default;
@@ -161,7 +183,7 @@ namespace C_Double_Flat.Graphics
                    if (args.Count < 5)
                         return ValueVariable.Default;
                    Interop.DrawPoly(args[0].AsVector2(), (int)args[1].AsDouble(),(int)args[2].AsDouble(),(int)args[3].AsDouble(),args[4].AsColor());
-                   return ValueVariable.Default; 
+                   return ValueVariable.Default;
                 }),
                 // Draws fills a polygon from center vector (list of 2 numbers) number of sides, radius, initial rotation, line thickness, to color (Either a string corresponding to the color, or a list of 4 numbers R.G.B.A)
                 new("graphics_outline_polygon", args =>
@@ -172,6 +194,87 @@ namespace C_Double_Flat.Graphics
                    return ValueVariable.Default;
                 }),
                 
+                // Allocates a texture by given file path and returns its "address" (key to texture dictionary)
+                new ("texture_allocate", args =>
+                {
+                    if (args.Count < 1)
+                        return ValueVariable.Default;
+                    var identifier = Guid.NewGuid();
+                    Textures.Add(identifier,Interop.LoadTexture(Path.GetFullPath(args[0].AsString())));
+                    return new ValueVariable(identifier.ToString());
+                }),
+                // Deallocates a texture by given "address" (key to texture dictionary) returns true if successful
+                new ("texture_deallocate",args =>
+                {
+                    if (args.Count < 1)
+                        return ValueVariable.Default;
+                    if (Guid.TryParse(args[0].AsString(), out var identifier))
+                    {
+                        Interop.UnloadTexture(Textures[identifier]);
+                        Textures.Remove(identifier);
+                        return new ValueVariable(true);
+                    }
+                    return new ValueVariable(false);
+                }),         
+                // Renders a texture by given "address" (key to texture dictionary) at vector (list of 2 numbers), with optional parameters for rotation and scale.
+                new ("texture_render", args =>
+                {
+                    if (args.Count < 2)
+                        return ValueVariable.Default;
+                    bool successful = Guid.TryParse(args[0].AsString(), out var identifier);
+                    if (successful && args.Count < 4)
+                        Interop.DrawTextureV(Textures[identifier],args[1].AsVector2(),Color.White);
+                    else if (successful)
+                        Interop.DrawTextureEx(Textures[identifier], args[1].AsVector2(), (float)args[2].AsDouble(), (float)args[3].AsDouble(), Color.White);
+                    return ValueVariable.Default;
+                    
+
+                }),
+                
+                // Allocates a font by given file path and returns its "address" (key to font dictionary)
+                new ("font_allocate", args => 
+                {
+                    if (args.Count < 1)
+                        return ValueVariable.Default;
+                    var identifier = Guid.NewGuid();
+                    Fonts.Add(identifier,Interop.LoadFont(Path.GetFullPath(args[0].AsString())));
+                    return new ValueVariable(identifier.ToString());
+                }),
+                // Deallocates a font by given "address" (key to font dictionary) returns true if successful
+                new ("font_deallocate",args =>
+                {
+                    if (args.Count < 1)
+                        return ValueVariable.Default;
+                    if (Guid.TryParse(args[0].AsString(), out var identifier))
+                    {
+                        Interop.UnloadFont(Fonts[identifier]);
+                        Fonts.Remove(identifier);
+                        return new ValueVariable(true);
+                    }
+                    return new ValueVariable(false);
+                }),
+                // Draws a text by given "address" (key to font dictionary), text to draw, at vector (list of 2 numbers), size, spacing (in pixels), and color
+                // Or text to draw, at vector, size, and color
+                new ("graphics_draw_text", args =>
+                {
+                    if (args.Count < 4)  
+                        return ValueVariable.Default;
+                    if (args.Count < 6)
+                        Interop.DrawText(args[0].AsString(),(int)args[1].AsVector2().X,(int)args[1].AsVector2().Y,(int)args[2].AsDouble(),args[3].AsColor());
+                    bool successful = Guid.TryParse(args[0].AsString(), out var identifier);
+                    if (successful)
+                        Interop.DrawTextEx(Fonts[identifier], args[1].AsString(), args[2].AsVector2(), (float)args[3].AsDouble(), (float)args[4].AsDouble(), args[5].AsColor());
+                    return ValueVariable.Default;
+                }),
+                new ("graphics_draw_fps", args =>
+                {
+                   if (args.Count < 1)
+                        return ValueVariable.Default;
+                   var location = args[0].AsVector2();
+                   Interop.DrawFPS((int)location.X,(int)location.Y);
+                   
+                   return ValueVariable.Default;
+                }),
                 // Gets clipboard contents
                 new ("clipboard_get", args => {
                     return new ValueVariable(Interop.GetClipboardText());

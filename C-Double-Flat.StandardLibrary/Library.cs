@@ -1,5 +1,6 @@
 ﻿using C_Double_Flat.Core.Utilities;
 using C_Double_Flat.Core.Runtime;
+using C_Double_Flat.Core.Parser;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -380,6 +381,26 @@ namespace C_Double_Flat.StandardLibrary
                     if (p.Count < 1)
                         return ValueVariable.Default;
                     Thread.Sleep((int)p[0].AsDouble());
+                    return ValueVariable.Default;
+                }),
+                
+                new("execute", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    var code = p[0].AsString();
+                    return Interpreter.Interpret(Parser.Parse(Lexer.Tokenize(code)),Environment.CurrentDirectory).Item1;
+                }),
+
+                new ("execute_async", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    var code = p[0].AsString();
+                    Thread thread = new(() => Interpreter.Interpret(Parser.Parse(Lexer.Tokenize(code)),Environment.CurrentDirectory));
+                    thread.Start();
                     return ValueVariable.Default;
                 }),
                 #endregion

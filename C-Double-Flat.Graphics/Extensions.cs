@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using C_Double_Flat.Core.Utilities;
 using System.Numerics;
+using C_Double_Flat.Graphics.Structs;
 namespace C_Double_Flat.Graphics
 {
     internal static class Extensions
@@ -13,7 +14,20 @@ namespace C_Double_Flat.Graphics
         {
             return b != 0;
         }
+        
+        internal static ConfigFlags AsConfigFlag(this string str)
+        {
+            if (Enum.TryParse(typeof(ConfigFlags), str.ToUpper(), true, out object result))
+            {
+                return (ConfigFlags)result;
+            }
+            return 0x0;
+        }
 
+        internal static IVariable AsVariable(this Vector2 vector)
+        {
+            return new CollectionVariable(new IVariable[] { new ValueVariable(vector.X), new ValueVariable(vector.Y) });
+        }
         internal static Vector2 AsVector2(this IVariable variable)
         {
             if (variable.Type() == VariableType.Value)

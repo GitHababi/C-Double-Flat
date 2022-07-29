@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Security;
 using System.Numerics;
+using C_Double_Flat.Graphics.Structs;
 namespace C_Double_Flat.Graphics
 {
     /// <summary>
@@ -14,7 +10,16 @@ namespace C_Double_Flat.Graphics
     [SuppressUnmanagedCodeSecurity]
     unsafe internal class Interop
     {
+        // Flags
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetTraceLogLevel(TraceLogLevel logLevel);
 
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsWindowState(ConfigFlags flag);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetConfigFlags(ConfigFlags flags);        
+        
         // Window Stuff (In no particular order)
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
@@ -37,6 +42,13 @@ namespace C_Double_Flat.Graphics
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetScreenHeight();
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetWindowIcon(Image image);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetWindowTitle(string title);
+
 
         // Drawing Methods
 
@@ -78,10 +90,48 @@ namespace C_Double_Flat.Graphics
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DrawPolyLinesEx(Vector2 center, int sides, float radius, float rotation, float lineThick, Color color);
 
-        // Mouse
+        // Input
+
+        // Fonts and Text
         
-            
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Font LoadFont(string fileName);
         
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void UnloadFont(Font font);
+        
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawFPS(int posX, int posY);
+        
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawText(string text, int posX, int posY, int fontSize, Color color);
+        
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawTextEx(Font font, string text, Vector2 position, float fontSize, float spacing, Color tint);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Vector2 MeasureTextEx(Font font, string text, float fontSize, float spacing);
+
+        // Images
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Image LoadImage(string fileName);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Texture2D LoadTexture(string fileName);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void UnloadTexture(Texture2D texture);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Texture2D LoadTextureFromImage(Image image);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawTextureV(Texture2D texture, Vector2 position, Color tint);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint);
+
         // Misc.
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
