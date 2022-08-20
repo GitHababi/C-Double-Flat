@@ -18,7 +18,7 @@ namespace C_Double_Flat.App
             if (args.Length == 0 || !File.Exists(args[0]))
             {
                 // TODO: Localization! (Cause why not)
-                Console.WriteLine("C Double Flat - 3.0.0-alpha");
+                Console.WriteLine("C Double Flat - 3.0.0");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
                 REPL();
