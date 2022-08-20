@@ -134,34 +134,33 @@ namespace C_Double_Flat.Core.Runtime
 
         public static void LoadLibraryFromPath(string libraryPath)
         {
-
-            var lib = Assembly.LoadFile(libraryPath);
+            var lib = Assembly.LoadFile(Path.GetFullPath(libraryPath));
             var types = lib.GetTypes();
             foreach (var type in types)
             {
                 if (typeof(ILoadable).IsAssignableFrom(type))
-                    Interpreter.SetFunction(((ILoadable)Activator.CreateInstance(type)).GetFunctions());
+                    SetFunction(((ILoadable)Activator.CreateInstance(type)).GetFunctions());
             }
         }
 
         public static void LoadLibrary(ILoadable library)
         {
-            Interpreter.SetFunction(library.GetFunctions());
+            SetFunction(library.GetFunctions());
         }
 
 
         private (IVariable, bool) Interpret(Statement statement)
         {
             Environment.CurrentDirectory = this.Dir; // ensure all execution happens where the interpreter is
-           try
-           {
+            try
+            {
                 switch (statement.Type)
                 {
                     case StatementType.Dispose:
                         InterpretDispose((DisposeStatement)statement);
                         break;
                     case StatementType.Expression:
-                        return (InterpretExpression(((ExpressionStatement)statement).Expression),false);
+                        return (InterpretExpression(((ExpressionStatement)statement).Expression), false);
                     case StatementType.Block:
                         return InterpretBlock((StatementBlock)statement);
                     case StatementType.Return:
@@ -223,6 +222,7 @@ namespace C_Double_Flat.Core.Runtime
         }
         private (IVariable, bool) InterpretRun(RunStatement runStatement)
         {
+
             var path = InterpretExpression(runStatement.RelativeLocation).AsString();
             try
             {
@@ -232,12 +232,11 @@ namespace C_Double_Flat.Core.Runtime
                     return (ValueVariable.Default, false);
                 }
                 var data = File.ReadAllText(path);
-
                 var statements = Parser.Parser.Parse(Lexer.Tokenize(data));
                 var location = Path.GetDirectoryName(Path.Combine(Environment.CurrentDirectory, path));
                 return Interpret(statements, location);
             }
-            catch { /* oopsie */ }
+            catch {/* oopsie */ }
             return (ValueVariable.Default, false);
 
         }
@@ -276,12 +275,12 @@ namespace C_Double_Flat.Core.Runtime
                 // discard the return value as it's only used internally
                 return;
             }
-            
+
             if (statement.Identifier.Type != NodeType.AsName &&
                 statement.Identifier.Type != NodeType.Literal)
                 return;
             string assignment = GetIdentifier(statement.Identifier);
-            
+
             SetVariable(statement.Global, assignment, InterpretExpression(statement.Assignment));
         }
 
@@ -305,15 +304,15 @@ namespace C_Double_Flat.Core.Runtime
             }
             else
                 variable = ((CollectionVariable)InterpretCollectionLocationAssignment(assigner.Caller as CollectionCallNode, assignment, globality))
-                           .ExtendTo(location+1);
+                           .ExtendTo(location + 1);
             if (location < 1)
-                variable.ExtendTo(1); 
+                variable.ExtendTo(1);
             if (variable.Variables[location].Type() != VariableType.Collection && !topLevel)
                 variable.Variables[location] = new CollectionVariable();
             if (topLevel)
                 variable.Variables[location] = InterpretExpression(assignment);
             else
-                ((CollectionVariable)variable.Variables[location]).ExtendTo(location+1);
+                ((CollectionVariable)variable.Variables[location]).ExtendTo(location + 1);
             return variable.Variables[location];
         }
         private string GetIdentifier(ExpressionNode node)

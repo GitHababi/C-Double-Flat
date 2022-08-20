@@ -90,12 +90,7 @@ namespace C_Double_Flat.Core.Parser
                     output = new(Position, TokenType.SemiColon);
                     break;
                 case '<':
-                    if (Peek() == '-')
-                    {
-                        output = new(Position, TokenType.Insertion);
-                        Advance();
-                    }
-                    else if (Peek() == '=')
+                    if (Peek() == '=')
                     {
                         output = new(Position, TokenType.LessThanOrEqual);
                         Advance();
@@ -155,7 +150,7 @@ namespace C_Double_Flat.Core.Parser
                         break;
                     else if (Char.IsDigit(CurrentChar))
                         output = TokenizeNumber();
-                    else if (Regex.IsMatch(CurrentChar.ToString(), @"[&@$\w]"))
+                    else if (Regex.IsMatch(CurrentChar.ToString(), @"[@$\w]"))
                         output = TokenizeWord();
                     else throw new InvalidTokenException(Position, CurrentChar);
                     break;
@@ -258,6 +253,13 @@ namespace C_Double_Flat.Core.Parser
                         {
                             't' => '\t',
                             'n' => '\n',
+                            '0' => '\0',
+                            'r' => '\r',
+                            'b' => '\b',
+                            'f' => '\f',
+                            'v' => '\v',
+                            'a' => '\a',
+                            '^' => '^',
                             _ => CurrentChar
                         };
                         break;

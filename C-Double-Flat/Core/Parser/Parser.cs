@@ -45,6 +45,11 @@ namespace C_Double_Flat.Core.Parser
             return current;
         }
 
+        private Token? TryGetNext(TokenType type)
+        {
+            return (CurrentToken.Type == type) ? Next() : null;
+        }
+
         private Token ExpectThenNext(TokenType type)
         {
             if (CurrentToken.Type == type) return Next();

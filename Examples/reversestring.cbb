@@ -3,6 +3,7 @@
 reverse_string(string): {
 	output : "";
 	arr : str_to_col(string);
+	index: 1;
 	repeat arr: {
 		output : output + arr[to_num(arr) - index];
 		index : index + 1;

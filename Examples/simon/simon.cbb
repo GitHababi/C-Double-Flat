@@ -1,0 +1,197 @@
+# Simon: Barebones Edition
+# The first ever game made in cbb
+# requires graphics library
+# Made by Hababi
+
+run "Graphics.dll"
+
+disp_visible(false) # hide the console
+
+global colors: # each quadrant has a color, and a dark version of that color
+[
+  [ # Blue
+	[25,25,255,255],
+	[0,0,200,255]
+  ],
+  [ # Yellow
+	[255,255,25,255],
+	[200,200,0,255]
+  ],
+  [ # Red
+	[255,25,25,255],
+	[200,0,0,255]
+  ],
+  [ # Green
+    [25,255,25,255],
+	[0,200,0,255]
+  ]
+];
+
+global state: 
+[
+	1,
+	1,
+	1,
+	1,
+];
+
+global input_quadrants: []
+global input_quadrants_count : 0;
+global correct_quadrants : [];
+global correct_quadrants_count : 0;
+global input_mode : true;
+global start : true; # show start menu
+global lost : false; # show score screen
+
+load_sources(): 
+{
+	global sound_effect: sound_allocate("effect.wav")
+}
+
+unload_sources():
+{
+	sound_deallocate(sound_effect)
+	dispose sound_effect
+}
+
+print_each(array):
+{
+	index : 1;
+	repeat array: {
+		disp_echo(array[index])
+		index : index + 1
+	}
+}
+
+generate_next_iteration(): 
+{
+	input_mode:false;
+	wait(1000)
+	correct_quadrants[correct_quadrants_count + 1]: math_rand(1,4);
+	correct_quadrants_count : correct_quadrants_count + 1;
+	global i : 1;
+	repeat correct_quadrants:
+	{
+		sound_set_pitch(sound_effect, 1 + (correct_quadrants[i] - 1) * 0.1)
+		sound_play(sound_effect)
+		state[correct_quadrants[i]] : 2;
+		execute_async # reset color after delay
+		("
+			reset_quadrant_color(correct_quadrants[i])
+		")
+		wait(850)
+		i : i + 1;
+	}
+	input_mode : true	
+}
+
+reset_quadrant_color(quadrant_local): 
+{
+	wait(500)
+	state[quadrant_local] : 1;
+}
+
+get_quadrant(vector_pos):
+{
+	if vector_pos[1] < 400:
+		if vector_pos[2] < 400:
+			return 2
+		else:
+			return 3
+	else:
+		if vector_pos[2] < 400:
+			return 1
+		else:
+			return 4
+	
+}
+
+graphics_init(800,800)
+graphics_set_fps(15)
+sound_init()
+load_sources()
+
+loop !graphics_should_close(): 
+{
+	graphics_draw_start()
+	graphics_clear_bg("black")
+	if input_mouse_pressed("mouse_button_left") & input_mode: 
+	{
+		if lost: 
+		{
+			start:true;
+			lost:false;
+			correct_quadrants : [];
+			correct_quadrants_count : 0;
+			input_quadrants : [];
+			correct_quadrants_count : 0;
+		}
+		else: if start:
+		{
+			start: false;
+			execute_async
+			("
+				generate_next_iteration()
+			")
+		}
+		else: 
+		{
+			global quadrant: get_quadrant(input_mouse_pos()); # needs to be global so async operation can access it
+			
+			sound_set_pitch(sound_effect, 1 + (quadrant - 1) * 0.1)
+			sound_play(sound_effect)
+			state[quadrant] : 2;
+			execute_async # reset color after delay
+			("
+				reset_quadrant_color(quadrant)
+			")
+			if input_quadrants_count < correct_quadrants_count:
+			{
+				input_quadrants_count : input_quadrants_count + 1
+				input_quadrants[input_quadrants_count] : quadrant;
+			}
+			disp_echo("input:")
+			print_each(input_quadrants)
+			disp_echo("correct:")
+			print_each(correct_quadrants)
+			
+			index : 1;
+			repeat input_quadrants: 
+			{
+				if input_quadrants[index] != correct_quadrants[index]:
+				{
+					lost: true;
+				}
+				index : index + 1
+			}
+			if input_quadrants_count > correct_quadrants_count: # how did we get here?
+				lost: true;
+			if input_quadrants_count = correct_quadrants_count & !lost: 
+			{
+				input_quadrants: [];
+				input_quadrants_count : 0
+				execute_async
+				("
+					generate_next_iteration()
+				")
+			}
+		}
+	}
+	graphics_fill_rect([400,0],400,400,colors[1][state[1]])
+	graphics_fill_rect([0,0],400,400,colors[2][state[2]])
+	graphics_fill_rect([0,400],400,400,colors[3][state[3]])
+	graphics_fill_rect([400,400],400,400,colors[4][state[4]])
+	if start:
+	{
+		graphics_draw_text("Click anywhere to play Simon!",[20,20],50,"black")
+	}
+	if lost: 
+	{
+		graphics_draw_text("You lose! Score: " + (correct_quadrants_count - 1) + "^nClick anywhere to restart!",[20,20],50,"black")
+	}
+	graphics_draw_end()
+}
+
+unload_sources()
+sound_close()
+graphics_close()

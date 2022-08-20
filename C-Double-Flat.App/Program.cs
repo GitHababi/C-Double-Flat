@@ -4,6 +4,7 @@ using C_Double_Flat.Core.Parser;
 using C_Double_Flat.Core.Utilities;
 using C_Double_Flat.Core.Runtime;
 using C_Double_Flat.StandardLibrary;
+
 namespace C_Double_Flat.App
 {
     internal class Program
@@ -17,7 +18,7 @@ namespace C_Double_Flat.App
             if (args.Length == 0 || !File.Exists(args[0]))
             {
                 // TODO: Localization! (Cause why not)
-                Console.WriteLine("C Double Flat - REPL 2.4.5");
+                Console.WriteLine("C Double Flat - 3.0.0-alpha");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
                 REPL();
@@ -26,7 +27,6 @@ namespace C_Double_Flat.App
             try
             {
                 var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(args[0])));
-
                 var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 if (statements.Type == StatementType.Expression || output.Item2)

@@ -36,14 +36,29 @@ namespace C_Double_Flat.Core.Parser
                 TokenType.Else => ParseLoneElseStatement(),
                 TokenType.Identifier or TokenType.AsName => ParseAmbiguousDeclaration(),
                 TokenType.Dispose => ParseDisposeStatement(),
+                TokenType.SemiColon => ParseEmptyStatement(),
                 _ => ParseExpressionStatement(),
             };
+        }
+
+        private Statement ParseEmptyStatement()
+        {
+            var token = Next();
+            return new ExpressionStatement(
+                token.Position, 
+                new LiteralNode(
+                    new() 
+                    { 
+                        Position = token.Position, Type = TokenType.Number, Data = "0"
+                    }
+                    )
+                );
         }
         private Statement ParseDisposeStatement()
         {
             var position = ExpectThenNext(TokenType.Dispose).Position;
             var disposer = ParsePrimaryExpression();
-            ExpectThenNext(TokenType.SemiColon);
+            TryGetNext(TokenType.SemiColon);
             return new DisposeStatement(position, disposer);
         }
 
@@ -54,7 +69,7 @@ namespace C_Double_Flat.Core.Parser
             if (Peek(0).Type != TokenType.Assignment) // Filter out any regular expression statements
             {
                 var expression = ParseBinaryExpression(identifier);
-                ExpectThenNext(TokenType.SemiColon);
+                TryGetNext(TokenType.SemiColon);
                 return new ExpressionStatement(position, expression);
             }
             ExpectThenNext(TokenType.Assignment);
@@ -68,7 +83,7 @@ namespace C_Double_Flat.Core.Parser
         {
             var position = ExpectThenNext(TokenType.Run).Position;
             var relativeLocation = ParseBinaryExpression();
-            ExpectThenNext(TokenType.SemiColon);
+            TryGetNext(TokenType.SemiColon);
             return new RunStatement(position, relativeLocation);
 
         }
@@ -132,7 +147,7 @@ namespace C_Double_Flat.Core.Parser
             var identifier = ParsePrimaryExpression();
             ExpectThenNext(TokenType.Assignment);
             var assignment = ParseBinaryExpression();
-            ExpectThenNext(TokenType.SemiColon);
+            TryGetNext(TokenType.SemiColon);
             return new AssignmentStatement(identifier.Position, identifier, assignment, globality.Type == TokenType.Global);
         }
 
@@ -140,7 +155,7 @@ namespace C_Double_Flat.Core.Parser
         {
             var position = ExpectThenNext(TokenType.Return).Position;
             var expression = ParseBinaryExpression();
-            ExpectThenNext(TokenType.SemiColon);
+            TryGetNext(TokenType.SemiColon);
             return new ReturnStatement(position, expression);
         }
 
@@ -149,7 +164,7 @@ namespace C_Double_Flat.Core.Parser
         {
             var position = CurrentToken.Position;
             var expression = ParseBinaryExpression();
-            ExpectThenNext(TokenType.SemiColon);
+            TryGetNext(TokenType.SemiColon);
             return new ExpressionStatement(position, expression);
         }
     }

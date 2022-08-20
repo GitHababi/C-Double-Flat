@@ -13,7 +13,7 @@ callback_one(arg): {
 }
 
 
-callback_two(arg) : {
+callback_two(arg): {
 	disp_echo("This is callback 2: " + (arg + 2));
 }
 
