@@ -134,22 +134,18 @@ namespace C_Double_Flat.Core.Runtime
 
         public static void LoadLibraryFromPath(string libraryPath)
         {
-            try
+            var lib = Assembly.LoadFile(Path.GetFullPath(libraryPath));
+            var types = lib.GetTypes();
+            foreach (var type in types)
             {
-                var lib = Assembly.LoadFile(Path.GetFullPath(libraryPath));
-                var types = lib.GetTypes();
-                foreach (var type in types)
-                {
-                    if (typeof(ILoadable).IsAssignableFrom(type))
-                        Interpreter.SetFunction(((ILoadable)Activator.CreateInstance(type)).GetFunctions());
-                }
+                if (typeof(ILoadable).IsAssignableFrom(type))
+                    SetFunction(((ILoadable)Activator.CreateInstance(type)).GetFunctions());
             }
-            catch (Exception e) { Console.WriteLine(e.Message); }
         }
 
         public static void LoadLibrary(ILoadable library)
         {
-            Interpreter.SetFunction(library.GetFunctions());
+            SetFunction(library.GetFunctions());
         }
 
 
@@ -226,6 +222,7 @@ namespace C_Double_Flat.Core.Runtime
         }
         private (IVariable, bool) InterpretRun(RunStatement runStatement)
         {
+
             var path = InterpretExpression(runStatement.RelativeLocation).AsString();
             try
             {
@@ -235,12 +232,11 @@ namespace C_Double_Flat.Core.Runtime
                     return (ValueVariable.Default, false);
                 }
                 var data = File.ReadAllText(path);
-
                 var statements = Parser.Parser.Parse(Lexer.Tokenize(data));
                 var location = Path.GetDirectoryName(Path.Combine(Environment.CurrentDirectory, path));
                 return Interpret(statements, location);
             }
-            catch { /* oopsie */ }
+            catch {/* oopsie */ }
             return (ValueVariable.Default, false);
 
         }

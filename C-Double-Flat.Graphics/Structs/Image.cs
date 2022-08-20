@@ -150,5 +150,14 @@ namespace C_Double_Flat.Graphics.Structs
         /// Data format (PixelFormat type)
         /// </summary>
         public PixelFormat format;
+
+        /// <summary>
+        /// True if data is null pointer (workaround to prevent unsafe compiler errors)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            return data == null;
+        }
     }
 }

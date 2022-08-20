@@ -83,11 +83,8 @@ namespace C_Double_Flat.Core.Runtime
                 Environment.CurrentDirectory = this.Dir; // ensure all execution happens where the interpreter is
                 return function.Run(parameters);
             }
-            catch (Exception ex)
+            catch
             {
-#if DEBUG
-                Console.WriteLine(ex.Message);
-#endif
                 /* oopsie */
                 return ValueVariable.Default;
             }

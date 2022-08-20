@@ -34,6 +34,15 @@ namespace C_Double_Flat.Graphics
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void ToggleFullscreen();
 
+        [DllImport("raylib",CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MaximizeWindow();
+        
+        [DllImport("raylib",CallingConvention = CallingConvention.Cdecl)]
+        public static extern void MinimizeWindow();
+        
+        [DllImport("raylib",CallingConvention = CallingConvention.Cdecl)]
+        public static extern void RestoreWindow();
+
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern sbyte WindowShouldClose();
 
@@ -44,11 +53,31 @@ namespace C_Double_Flat.Graphics
         public static extern int GetScreenHeight();
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetMonitorCount();
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetCurrentMonitor();
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetMonitorWidth(int monitor);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetMonitorHeight(int monitor);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetMonitorRefreshRate(int monitor);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Vector2 GetWindowPosition();
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetWindowIcon(Image image);
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetWindowTitle(string title);
 
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetWindowPosition(int x, int y);
 
         // Drawing Methods
 
@@ -92,8 +121,48 @@ namespace C_Double_Flat.Graphics
 
         // Input
 
-        // Fonts and Text
+
         
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsKeyPressed(KeyboardKey key);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsKeyDown(KeyboardKey key);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsKeyReleased(KeyboardKey key);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetKeyPressed();
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetCharPressed();
+
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsMouseButtonPressed(MouseButton button);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsMouseButtonDown(MouseButton button);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsMouseButtonReleased(MouseButton button);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsMouseButtonUp(MouseButton button);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Vector2 GetMousePosition();
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetMousePosition(int x, int y);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float GetMouseWheelMove();
+        
+        
+        // Fonts and Text
+
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern Font LoadFont(string fileName);
         
@@ -118,6 +187,9 @@ namespace C_Double_Flat.Graphics
         public static extern Image LoadImage(string fileName);
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void UnloadImage(Image image);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern Texture2D LoadTexture(string fileName);
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
@@ -132,7 +204,56 @@ namespace C_Double_Flat.Graphics
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint);
 
+        // Audio
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void InitAudioDevice();
+        
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void CloseAudioDevice();
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern Sound LoadSound(string fileName);
+        
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void UnloadSound(Sound sound);
+        
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void PlaySoundMulti(Sound sound);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern sbyte IsSoundPlaying(Sound sound);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void StopSoundMulti(Sound sound);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void PlaySound(Sound sound);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void StopSound(Sound sound);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void PauseSound(Sound sound);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ResumeSound(Sound sound);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetSoundVolume(Sound sound, float volume);
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetSoundPitch(Sound sound, float pitch);
+
         // Misc.
+
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetTargetFPS(int fps);
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetFPS();
+        
+        [DllImport("raylib", CallingConvention = CallingConvention.Cdecl)]
+        public static extern float GetFrameTime();
 
         [DllImport("raylib", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern string GetClipboardText();

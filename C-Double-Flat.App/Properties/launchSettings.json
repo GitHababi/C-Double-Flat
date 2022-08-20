@@ -5,8 +5,8 @@
     },
     "Graphics Script": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\heero\\Desktop\\test.cbb\"",
-      "workingDirectory": "C:\\Users\\heero\\Desktop"
+      "commandLineArgs": "\"C:\\Users\\heero\\Desktop\\amogus\\amogus.cbb\"",
+      "workingDirectory": "C:\\Users\\heero\\Desktop\\amogus"
     }
   }
 }

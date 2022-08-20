@@ -24,6 +24,42 @@ namespace C_Double_Flat.Graphics
             return 0x0;
         }
 
+        internal static KeyboardKey AsKeyboardKey(this string str)
+        {
+            if (Enum.TryParse(typeof(KeyboardKey), str.ToUpper(), true, out object result))
+            {
+                return (KeyboardKey)result;
+            }
+            return 0x0;
+        }
+
+        internal static MouseButton AsMouseButton(this string str)
+        {
+            if (Enum.TryParse(typeof(MouseButton), str.ToUpper(), true, out object result))
+            {
+                return (MouseButton)result;
+            }
+            return 0x0;
+        }
+        
+        internal static GamepadAxis AsGamepadAxis(this string str)
+        {
+            if (Enum.TryParse(typeof(GamepadAxis), str.ToUpper(), true, out object result))
+            {
+                return (GamepadAxis)result;
+            }
+            return 0x0;
+        }
+
+        internal static GamepadButton AsGamepadButton(this string str)
+        {
+            if (Enum.TryParse(typeof(GamepadButton), str.ToUpper(), true, out object result))
+            {
+                return (GamepadButton)result;
+            }
+            return 0x0;
+        }
+
         internal static IVariable AsVariable(this Vector2 vector)
         {
             return new CollectionVariable(new IVariable[] { new ValueVariable(vector.X), new ValueVariable(vector.Y) });

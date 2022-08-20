@@ -1,0 +1,91 @@
+# a cute funny little amogus program :)
+# this project file requires the graphics library!
+
+run "Graphics.dll"
+
+disp_visible(false);
+graphics_init(500,500);
+sound_init();
+graphics_set_fps(75);
+graphics_set_icon("amogus.gif");
+graphics_set_title("Not Amongus");
+
+amogus : [texture_allocate("amogus.gif"),texture_allocate("imposter.gif")];
+font : font_allocate("font.ttf");
+sound : sound_allocate("sound.wav");
+sound2 : sound_allocate("sound2.wav");
+
+state : 1;
+dirmovement: 1;
+amogus_pos : [graphics_width() / 2 - 146,graphics_height() / 2 - 146];
+sus_play_count : 0;
+buffer : "";
+
+loop !graphics_should_close(): 
+{
+	#update
+	if input_key_down("key_w"):
+		amogus_pos[2] : amogus_pos[2] - 100 * window_delta_time();
+	else: if input_key_down("key_s"):
+		amogus_pos[2] : amogus_pos[2] + 100 * window_delta_time();
+	else: if input_key_down("key_a"):
+		amogus_pos[1] : amogus_pos[1] - 100 * window_delta_time();
+	else: if input_key_down("key_d"):
+		amogus_pos[1] : amogus_pos[1] + 100 * window_delta_time();	
+	if input_mouse_down("mouse_button_left"): 
+	{
+		amogus_pos : [input_mouse_pos()[1] - 146, input_mouse_pos()[2] - 146];
+	}
+	char : input_get_char();
+	if char != '^0':
+		buffer: buffer + char;
+	
+	if str_has(buffer,"amogus"): 
+	{
+		buffer : "";
+		state : 2;
+	}
+	if str_has(buffer,"sus"): 
+	{
+		sound_set_pitch(sound, 1 + 0.1 * sus_play_count);
+		if state = 1:
+			sound_play(sound);
+		else:
+			sound_play(sound2)
+		buffer : "";
+		sus_play_count : sus_play_count + 1;
+	}
+	if str_has(buffer,"nerd"):
+	{
+		if state = 1:
+		sound_stop(sound);
+		else:
+		sound_stop(sound2);
+		buffer : "";
+	}
+	#draw
+	graphics_draw_start() ;
+	if sound_playing(sound):
+		graphics_clear_bg("red");
+	else:
+		graphics_clear_bg("blue") ;
+	
+	texture_render(amogus[state],amogus_pos);
+	
+	graphics_draw_text(font,buffer,[20,20],texture_pos[1] / 20 + 20,1,"black");
+	graphics_draw_end(); 
+	
+} 
+
+texture_deallocate(amogus[1]);
+texture_deallocate(amogus[2]);
+dispose amogus;
+font_deallocate(font);
+dispose font;
+sound_deallocate(sound);
+dispose sound;
+sound_deallocate(sound2);
+dispose sound2;
+
+sound_close();
+graphics_close();
