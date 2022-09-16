@@ -1,15 +1,16 @@
-﻿using System;
-using System.IO;
-using C_Double_Flat.Core.Parser;
-using C_Double_Flat.Core.Utilities;
+﻿using C_Double_Flat.Core.Parser;
 using C_Double_Flat.Core.Runtime;
+using C_Double_Flat.Core.Utilities;
 using C_Double_Flat.StandardLibrary;
+using System;
+using System.IO;
 
 namespace C_Double_Flat.App
 {
     internal class Program
     {
-        public static readonly string Location = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string InstallLocation = AppDomain.CurrentDomain.BaseDirectory;
+        public static readonly string StartLocation = Environment.CurrentDirectory;
         public static void Main(string[] args)
         {
             Interpreter.LoadLibrary(new Library());
@@ -18,7 +19,7 @@ namespace C_Double_Flat.App
             if (args.Length == 0 || !File.Exists(args[0]))
             {
                 // TODO: Localization! (Cause why not)
-                Console.WriteLine("C Double Flat - 3.0.0");
+                Console.WriteLine("C Double Flat - 3.0.1");
                 Console.WriteLine("Created by Heerod Sahraei");
                 Console.WriteLine("Copyleft Hababisoft Corporation. All rights unreserved.");
                 REPL();
@@ -26,12 +27,12 @@ namespace C_Double_Flat.App
 
             try
             {
-                var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(args[0])));
-                var output = Interpreter.Interpret(statements, File.Exists(args[0]) ? Path.GetDirectoryName(args[0]) : Location);
+                var fullPath = Path.GetFullPath(args[0]);
+                var statements = Parser.Parse(Lexer.Tokenize(File.ReadAllText(fullPath)));
+                var output = Interpreter.Interpret(statements, File.Exists(fullPath) ? Path.GetDirectoryName(fullPath) : StartLocation);
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 if (statements.Type == StatementType.Expression || output.Item2)
                     Console.WriteLine(output.Item1.ToString());
-                Environment.Exit(0);
             }
             catch (Exception e)
             {
@@ -39,6 +40,7 @@ namespace C_Double_Flat.App
                 Console.Error.WriteLine(e.Message);
                 Console.ResetColor();
             }
+            Console.ResetColor();
         }
 
         private static void REPL()
@@ -57,7 +59,7 @@ namespace C_Double_Flat.App
                     else
                         tokens = Lexer.Tokenize(input);
                     var statements = Parser.Parse(tokens);
-                    var output = Interpreter.Interpret(statements, File.Exists(input) ? Path.GetDirectoryName(input) : Location);
+                    var output = Interpreter.Interpret(statements, StartLocation);
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     if (statements.Type == StatementType.Expression || output.Item2)
                         Console.WriteLine(output.Item1.ToString());
@@ -75,7 +77,7 @@ namespace C_Double_Flat.App
         private static void LoadLibraries()
         {
             Console.Title = "Loading...";
-            string librariesPath = Path.Combine(Location, @"lib\");
+            string librariesPath = Path.Combine(InstallLocation, @"lib\");
             if (!Directory.Exists(librariesPath)) Directory.CreateDirectory(librariesPath);
 
             var files = Directory.GetFiles(librariesPath);

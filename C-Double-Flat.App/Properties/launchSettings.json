@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "No Startup Script": {
+    "Startr": {
       "commandName": "Project"
     }
   }
