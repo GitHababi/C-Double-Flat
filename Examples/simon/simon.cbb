@@ -5,7 +5,7 @@
 
 run "Graphics.dll"
 
-disp_visible(false) # hide the console
+disp_visible(true) # hide the console
 
 global colors: # each quadrant has a color, and a dark version of that color
 [
@@ -57,10 +57,13 @@ unload_sources():
 print_each(array):
 {
 	index : 1;
+	output : "[";
 	repeat array: {
-		disp_echo(array[index])
+		output : output + array[index] + " ";
 		index : index + 1
 	}
+	output : output + "]"
+	disp_echo(output)
 }
 
 generate_next_iteration(): 
@@ -117,6 +120,7 @@ loop !graphics_should_close():
 	graphics_clear_bg("black")
 	if input_mouse_pressed("mouse_button_left") & input_mode: 
 	{
+		
 		if lost: 
 		{
 			start:true;
@@ -145,20 +149,14 @@ loop !graphics_should_close():
 			("
 				reset_quadrant_color(quadrant)
 			")
-			if input_quadrants_count < correct_quadrants_count:
-			{
-				input_quadrants_count : input_quadrants_count + 1
-				input_quadrants[input_quadrants_count] : quadrant;
-			}
-			disp_echo("input:")
-			print_each(input_quadrants)
-			disp_echo("correct:")
-			print_each(correct_quadrants)
 			
+			input_quadrants_count : input_quadrants_count + 1
+			input_quadrants[input_quadrants_count] : quadrant;
+				
 			index : 1;
 			repeat input_quadrants: 
 			{
-				if input_quadrants[index] != correct_quadrants[index]:
+				if input_quadrants[index] != correct_quadrants[index] & !lost:
 				{
 					lost: true;
 				}
@@ -166,7 +164,8 @@ loop !graphics_should_close():
 			}
 			if input_quadrants_count > correct_quadrants_count: # how did we get here?
 				lost: true;
-			if input_quadrants_count = correct_quadrants_count & !lost: 
+				
+			if (input_quadrants_count = correct_quadrants_count) & !lost: 
 			{
 				input_quadrants: [];
 				input_quadrants_count : 0
