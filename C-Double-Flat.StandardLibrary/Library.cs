@@ -97,6 +97,11 @@ namespace C_Double_Flat.StandardLibrary
                     return ValueVariable.Default;
                 }),
 
+                new ("disp_reset_color", p =>
+                {
+                    Console.ResetColor();
+                    return ValueVariable.Default;
+                }),
 
                 #region Math
 
@@ -179,6 +184,27 @@ namespace C_Double_Flat.StandardLibrary
                     if (p.Count < 1)
                         return ValueVariable.Default;
                     return new ValueVariable(Math.Tan(p[0].AsDouble()));
+                }),
+
+                new("math_asin", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Asin(p[0].AsDouble()));
+                }),
+
+                new("math_acos", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Acos(p[0].AsDouble()));
+                }),
+
+                new("math_atan", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+                    return new ValueVariable(Math.Atan(p[0].AsDouble()));
                 }),
 
                 new("math_log", p =>
@@ -265,6 +291,18 @@ namespace C_Double_Flat.StandardLibrary
                     return new ValueVariable(list.IndexOf(p[1]) + 1);
                 }),
 
+                new ("col_size", p =>
+                {
+                    if (p.Count < 1)
+                        return ValueVariable.Default;
+
+                    if ((p[0].Type() != VariableType.Collection))
+                        return ValueVariable.Default;
+
+                    var list = ((CollectionVariable)p[0]).Variables.ToList();
+                    return new ValueVariable(list.Count);
+                }),
+
                 #endregion
 
                 #region String
@@ -301,7 +339,6 @@ namespace C_Double_Flat.StandardLibrary
                     p[0].AsString().Split(p[1].AsString()).ToList().ForEach(x => list.Add(new ValueVariable(x)));
 
                     return new CollectionVariable(list);
-
                 }),
 
                 new("str_to_col", p =>
